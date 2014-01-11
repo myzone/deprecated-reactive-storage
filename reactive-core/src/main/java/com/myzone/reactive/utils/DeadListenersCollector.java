@@ -1,9 +1,12 @@
 package com.myzone.reactive.utils;
 
+import com.myzone.annotations.Immutable;
+import com.myzone.annotations.NotNull;
+
 import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -15,11 +18,11 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 public class DeadListenersCollector {
 
     private final ReferenceQueue<Object> dieables;
-    private final ConcurrentLinkedQueue<UnregisterTask<?, ?>> unregisterTasks;
+    private final CopyOnWriteArrayList<UnregisterTask<?, ?>> unregisterTasks;
 
     public DeadListenersCollector() {
         dieables = new ReferenceQueue<>();
-        unregisterTasks = new ConcurrentLinkedQueue<>();
+        unregisterTasks = new CopyOnWriteArrayList<>();
 
         newSingleThreadExecutor().submit((Runnable) () -> {
             while (true) {
@@ -36,13 +39,11 @@ public class DeadListenersCollector {
         });
     }
 
-    public <L> FluentInterfaceState1<L> collect(L listener) {
+    public @NotNull <@NotNull L> FluentInterfaceState1<L> collect(@NotNull L listener) {
         return new FluentInterfaceState1<L>() {
-            @Override
-            public <T> FluentInterfaceState2<L> afterDeathOf(WeakReference<T> dieable) {
+            public @Override <T> FluentInterfaceState2<L> afterDeathOf(WeakReference<T> dieable) {
                 return new FluentInterfaceState2<L>() {
-                    @Override
-                    public void via(Consumer<L> unregisterAction) {
+                    public @Override void via(Consumer<L> unregisterAction) {
                         T strongRef = dieable.get();
 
                         if (strongRef != null) { // there is no sense to wait until null will garbage collected
@@ -54,34 +55,31 @@ public class DeadListenersCollector {
         };
     }
 
-    ;
+    public interface FluentInterfaceState1<@NotNull L> {
 
-    public interface FluentInterfaceState1<L> {
-
-        <T> FluentInterfaceState2<L> afterDeathOf(WeakReference<T> dieable);
+        @NotNull <T> FluentInterfaceState2<L> afterDeathOf(@NotNull WeakReference<T> dieable);
 
     }
 
-    public interface FluentInterfaceState2<L> {
+    public interface FluentInterfaceState2<@NotNull L> {
 
-        void via(Consumer<L> unregisterAction);
+        void via(@NotNull Consumer<L> unregisterAction);
 
     }
 
-    protected class UnregisterTask<L, T> extends PhantomReference<T> implements Runnable {
+    protected static @Immutable class UnregisterTask<L, T> extends PhantomReference<T> implements Runnable {
 
-        private final L listener;
-        private final Consumer<L> unregisterAction;
+        private final @NotNull L listener;
+        private final @NotNull Consumer<@NotNull L> unregisterAction;
 
-        public UnregisterTask(T referent, ReferenceQueue<? super T> q, L listener, Consumer<L> unregisterAction) {
-            super(referent, q);
+        public UnregisterTask(@NotNull T referent, @NotNull ReferenceQueue<? super T> queue, @NotNull L listener, @NotNull Consumer<@NotNull L> unregisterAction) {
+            super(referent, queue);
 
             this.listener = listener;
             this.unregisterAction = unregisterAction;
         }
 
-        @Override
-        public void run() {
+        public @Override void run() {
             unregisterAction.accept(listener);
         }
 
