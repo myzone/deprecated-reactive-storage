@@ -1,5 +1,6 @@
 package com.myzone.reactive.stream;
 
+import com.myzone.annotations.NotNull;
 import com.myzone.reactive.events.ChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
@@ -17,12 +18,12 @@ import java.util.function.Predicate;
  */
 public interface ObservableStream<T> {
 
-    ObservableStream<T> filter(Predicate<? super T> filter);
+    @NotNull ObservableStream<T> filter(@NotNull Predicate<? super T> filter);
 
-    <R> ObservableStream<R> map(Function<? super T, R> mapper);
+    @NotNull <R> ObservableStream<R> map(@NotNull Function<? super T, R> mapper);
 
-    ObservableReadonlyReference<Optional<T>, ReferenceChangeEvent<Optional<T>>> reduce(BiFunction<? super T, ? super T, ? extends T> reducer);
+    @NotNull ObservableReadonlyReference<Optional<T>, ReferenceChangeEvent<Optional<T>>> reduce(@NotNull BiFunction<? super T, ? super T, ? extends T> reducer);
 
-    <E extends ChangeEvent<T>, R extends Observable<T, E>> R collect(ObservableCollector<T, E, R> collector);
+    @NotNull <E extends ChangeEvent<T>, R extends Observable<T, E>> R collect(@NotNull ObservableCollector<T, E, R> collector);
 
 }

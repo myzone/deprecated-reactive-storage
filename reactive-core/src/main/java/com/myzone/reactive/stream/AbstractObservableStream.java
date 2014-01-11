@@ -1,6 +1,7 @@
 package com.myzone.reactive.stream;
 
 import com.google.common.collect.AbstractIterator;
+import com.myzone.annotations.NotNull;
 import com.myzone.reactive.events.ChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
@@ -24,26 +25,24 @@ import static com.myzone.reactive.observable.Observable.ChangeListener;
  */
 public abstract class AbstractObservableStream<T> implements ObservableStream<T>, Iterable<T> {
 
-    private static DeadListenersCollector listenersCollector = Observables.getListenersCollector();
+    private static @NotNull DeadListenersCollector listenersCollector = Observables.getListenersCollector();
 
-    private final ObservableHelper<T, ReferenceChangeEvent<T>> observableHelper;
+    private final @NotNull ObservableHelper<T, ReferenceChangeEvent<T>> observableHelper;
 
     protected AbstractObservableStream() {
         observableHelper = new ObservableHelper<>();
     }
 
-    @Override
-    public ObservableStream<T> filter(Predicate<? super T> filter) {
+    public @Override @NotNull ObservableStream<T> filter(Predicate<? super T> filter) {
         return new FilteredObservableStream<>(this, filter);
     }
 
-    @Override
-    public <R> ObservableStream<R> map(Function<? super T, R> mapper) {
+    public @Override @NotNull <R> ObservableStream<R> map(Function<? super T, R> mapper) {
         return new MappedObservableStream<>(this, mapper);
     }
 
-    @Override
-    public ObservableReadonlyReference<Optional<T>, ReferenceChangeEvent<Optional<T>>> reduce(BiFunction<? super T, ? super T, ? extends T> reducer) {
+
+    public @Override @NotNull ObservableReadonlyReference<Optional<T>, ReferenceChangeEvent<Optional<T>>> reduce(BiFunction<? super T, ? super T, ? extends T> reducer) {
         ConcurrentObservableReference<Optional<T>> observableReference = new ConcurrentObservableReference<>(doReduce(reducer));
 
         WeakReference<ConcurrentObservableReference<Optional<T>>> weakObservableReference = new WeakReference<>(observableReference);
@@ -63,8 +62,7 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         return observableReference;
     }
 
-    @Override
-    public <E extends ChangeEvent<T>, R extends Observable<T, E>> R collect(ObservableCollector<T, E, R> collector) {
+    public @Override @NotNull <E extends ChangeEvent<T>, R extends Observable<T, E>> R collect(ObservableCollector<T, E, R> collector) {
         Consumer<T> consumer = collector.createConsumer();
         Iterator<T> iterator = iterator();
 
@@ -91,7 +89,7 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         }
     }
 
-    protected Optional<T> doReduce(BiFunction<? super T, ? super T, ? extends T> reducer) {
+    protected @NotNull Optional<T> doReduce(BiFunction<? super T, ? super T, ? extends T> reducer) {
         Iterator<T> iterator = iterator();
 
         if (iterator.hasNext()) {
@@ -109,21 +107,19 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
 
     protected static class FilteredObservableStream<T> extends AbstractObservableStream<T> {
 
-        protected final AbstractObservableStream<T> origin;
-        protected final Predicate<? super T> predicate;
+        protected final @NotNull AbstractObservableStream<T> origin;
+        protected final @NotNull Predicate<? super T> predicate;
 
-        public FilteredObservableStream(AbstractObservableStream<T> origin, Predicate<? super T> predicate) {
+        public FilteredObservableStream(@NotNull AbstractObservableStream<T> origin, @NotNull Predicate<? super T> predicate) {
             this.origin = origin;
             this.predicate = predicate;
         }
 
-        @Override
-        public Iterator<T> iterator() {
+        public @Override @NotNull Iterator<T> iterator() {
             Iterator<T> originIterator = origin.iterator();
 
             return new AbstractIterator<T>() {
-                @Override
-                protected T computeNext() {
+                protected @Override T computeNext() {
                     while (originIterator.hasNext()) {
                         T next = originIterator.next();
 
@@ -140,26 +136,23 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
 
     protected static class MappedObservableStream<S, T> extends AbstractObservableStream<T> {
 
-        protected final AbstractObservableStream<S> origin;
-        protected final Function<? super S, T> function;
+        protected final @NotNull AbstractObservableStream<S> origin;
+        protected final @NotNull Function<? super S, T> function;
 
-        public MappedObservableStream(AbstractObservableStream<S> origin, Function<? super S, T> function) {
+        public MappedObservableStream(@NotNull AbstractObservableStream<S> origin, @NotNull Function<? super S, T> function) {
             this.origin = origin;
             this.function = function;
         }
 
-        @Override
-        public Iterator<T> iterator() {
+        public @Override @NotNull Iterator<T> iterator() {
             Iterator<S> originIterator = origin.iterator();
 
             return new Iterator<T>() {
-                @Override
-                public boolean hasNext() {
+                public @Override boolean hasNext() {
                     return originIterator.hasNext();
                 }
 
-                @Override
-                public T next() {
+                public @Override T next() {
                     return function.apply(originIterator.next());
                 }
             };

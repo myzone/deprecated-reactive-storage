@@ -1,5 +1,6 @@
 package com.myzone.reactive.stream;
 
+import com.myzone.annotations.NotNull;
 import com.myzone.reactive.observable.Observables;
 
 import java.util.Iterator;
@@ -10,14 +11,13 @@ import java.util.Iterator;
  */
 public final class ObservableStreams extends Observables {
 
-    public static <T> ObservableStream<T> observableStreamOf(Iterable<T> iterable) {
+    public static @NotNull <T> ObservableStream<T> observableStreamOf(Iterable<T> iterable) {
         return observableStreamOf(iterable.iterator());
     }
 
-    public static <T> ObservableStream<T> observableStreamOf(Iterator<T> iterator) {
+    public static @NotNull <T> ObservableStream<T> observableStreamOf(Iterator<T> iterator) {
         return new AbstractObservableStream<T>() {
-            @Override
-            public Iterator<T> iterator() {
+            public @Override @NotNull Iterator<T> iterator() {
                 return iterator;
             }
         };
