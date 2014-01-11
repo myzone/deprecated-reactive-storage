@@ -1,12 +1,11 @@
 package myzone.reactivestorage.accessor;
 
-import com.myzone.utils.Matchers;
 import com.myzone.reactive.collection.ObservableIterable;
 import com.myzone.reactive.events.ChangeEvent;
-import com.myzone.reactive.events.ListChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
 import com.myzone.reactivestorage.accessor.DataAccessor;
+import com.myzone.utils.Matchers;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
 import org.testng.annotations.BeforeTest;
@@ -16,10 +15,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
-import static com.myzone.utils.Matchers.TransformationMatcher.namedTransformation;
 import static com.myzone.reactive.stream.collectors.ObservableCollectors.toObservableIterable;
 import static com.myzone.reactivestorage.accessor.DataAccessor.DataModificationException;
 import static com.myzone.reactivestorage.accessor.DataAccessor.Transaction;
+import static com.myzone.utils.Matchers.TransformationMatcher.namedTransformation;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
@@ -59,7 +58,7 @@ public abstract class DataAccessorTest {
 
     @Test
     public void testListeners1() throws Exception {
-        ObservableIterable<Integer, ListChangeEvent<Integer>> ys = accessor.getAll()
+        ObservableIterable<Integer, ReferenceChangeEvent<Integer>> ys = accessor.getAll()
                 .filter(p -> p.getX() % 2 == 0)
                 .map(p -> p.getY())
                 .collect(toObservableIterable());
@@ -89,7 +88,7 @@ public abstract class DataAccessorTest {
 
     @Test
     public void testListeners2() throws Exception {
-        ObservableIterable<Integer, ListChangeEvent<Integer>> ys = accessor.getAll()
+        ObservableIterable<Integer, ReferenceChangeEvent<Integer>> ys = accessor.getAll()
                 .filter(p -> p.getX() % 2 == 0)
                 .map(p -> p.getY())
                 .collect(toObservableIterable());
@@ -118,7 +117,7 @@ public abstract class DataAccessorTest {
 
     @Test
     public void testListeners3() throws Exception {
-        ObservableIterable<Integer, ListChangeEvent<Integer>> ys = accessor.getAll()
+        ObservableIterable<Integer, ReferenceChangeEvent<Integer>> ys = accessor.getAll()
                 .filter(p -> p.getX() % 2 == 0)
                 .map(p -> p.getY())
                 .collect(toObservableIterable());
