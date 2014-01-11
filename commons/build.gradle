@@ -1,0 +1,10 @@
+apply from: "$rootDir/build.gradle"
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+dependencies {
+    compile 'com.google.guava:guava:15.0'
+    compile 'org.hamcrest:hamcrest:1.3'
+}

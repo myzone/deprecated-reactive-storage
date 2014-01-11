@@ -1,0 +1,7 @@
+include 'commons',
+        'reactive-core',
+        'reactive-storage',
+        'reactive-storage:in-memory-reactive-storage',
+        'reactive-storage:reactive-storage-core',
+        'reactive-storage:remote-reactive-storage-clients',
+        'reactive-storage:remote-reactive-storage-endpoints'
