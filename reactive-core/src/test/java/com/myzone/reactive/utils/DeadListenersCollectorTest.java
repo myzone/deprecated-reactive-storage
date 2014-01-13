@@ -5,8 +5,8 @@ import com.myzone.reactive.observable.Observable;
 import com.myzone.reactive.reference.ConcurrentObservableReference;
 import com.myzone.reactive.reference.ObservableReadonlyReference;
 import com.myzone.reactive.reference.ObservableReference;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
@@ -19,12 +19,11 @@ import static org.mockito.Mockito.*;
  * @author myzone
  * @date 03.01.14
  */
-@Test
 public class DeadListenersCollectorTest {
 
     private DeadListenersCollector deadListenersCollector;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         deadListenersCollector = new DeadListenersCollector();
     }

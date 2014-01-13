@@ -1,29 +1,31 @@
 package com.myzone.reactivestorage.accessor;
 
+import com.myzone.annotations.NotNull;
 import com.myzone.reactive.stream.ObservableStream;
 
 import java.util.stream.Stream;
 
 /**
- * Created by myzone on 30.12.13.
+ * @author myzone
+ * @date 30.12.13
  */
 public interface DataAccessor<T> {
 
-    ObservableStream<T> getAll();
+    @NotNull ObservableStream<@NotNull T> getAll();
 
-    Transaction<T> beginTransaction();
+    @NotNull Transaction<T> beginTransaction();
 
     interface Transaction<T> extends AutoCloseable {
 
-        T transactional(T o);
+        @NotNull T transactional(@NotNull T o);
 
-        Stream<T> getAll();
+        Stream<@NotNull T> getAll();
 
-        void save(T o);
+        void save(@NotNull T o);
 
-        void update(T o);
+        void update(@NotNull T o);
 
-        void delete(T o);
+        void delete(@NotNull T o);
 
         void commit() throws DataModificationException;
 

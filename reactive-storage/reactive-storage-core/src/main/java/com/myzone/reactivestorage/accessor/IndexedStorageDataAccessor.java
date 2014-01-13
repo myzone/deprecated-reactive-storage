@@ -1,17 +1,20 @@
 package com.myzone.reactivestorage.accessor;
 
+import com.myzone.annotations.NotNull;
+
 import java.util.function.Predicate;
 
 /**
- * Created by myzone on 30.12.13.
+ * @author myzone
+ * @date 30.12.13
  */
 public interface IndexedStorageDataAccessor<T> {
 
-    OptimizationManager<T> getOptimizationManager();
+    @NotNull OptimizationManager<T> getOptimizationManager();
 
     interface OptimizationManager<T> {
 
-        <V> Predicate<T> byIndex(Index<T, V> index, V value);
+        <V> Predicate<@NotNull T> byIndex(@NotNull Index<T, V> index, V value);
 
     }
 

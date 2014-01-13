@@ -4,10 +4,9 @@ import com.google.common.base.Supplier;
 import com.myzone.reactive.events.ChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
-import com.myzone.reactive.reference.ObservableReference;
 import com.myzone.utils.Matchers;
 import org.hamcrest.core.IsEqual;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import static com.myzone.reactive.observable.Observable.ChangeListener;
 import static com.myzone.utils.Matchers.TransformationMatcher.namedTransformation;
@@ -27,7 +26,8 @@ public abstract class ObservableReferenceTest {
         this.observableReferenceFactory = observableReferenceFactory;
     }
 
-    @Test void testUpCast() {
+    @Test
+    public void testUpCast() {
         ChangeListener<String, ReferenceChangeEvent<String>> changeListener1 = new ChangeListener<String, ReferenceChangeEvent<String>>() {
             @Override
             public void onChange(Observable<String, ? extends ReferenceChangeEvent<String>> source, ReferenceChangeEvent<String> event) {
