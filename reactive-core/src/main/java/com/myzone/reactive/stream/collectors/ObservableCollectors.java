@@ -2,6 +2,7 @@ package com.myzone.reactive.stream.collectors;
 
 import com.myzone.annotations.NotNull;
 import com.myzone.reactive.collection.ObservableIterable;
+import com.myzone.reactive.events.ImmutableReferenceChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.utils.UtilityClass;
 
@@ -43,7 +44,7 @@ public final class ObservableCollectors extends UtilityClass {
                     }
 
                     public @Override void removeListener(ChangeListener<T, ? super ReferenceChangeEvent<T>> changeListener) {
-                        changeListeners.add(changeListener);
+                        changeListeners.remove(changeListener);
                     }
 
                     public @Override boolean equals(Object obj) {
@@ -60,15 +61,7 @@ public final class ObservableCollectors extends UtilityClass {
                 };
 
                 return new Summary<>(result, (oldValue, newValue) -> {
-                    ReferenceChangeEvent<T> changeEvent = new ReferenceChangeEvent<T>() {
-                        public @Override T getOld() {
-                            return oldValue;
-                        }
-
-                        public @Override T getNew() {
-                            return newValue;
-                        }
-                    };
+                    ReferenceChangeEvent<T> changeEvent = new ImmutableReferenceChangeEvent<>(oldValue, newValue);
 
                     changeListeners.forEach(listener -> {
                         listener.onChange(result, changeEvent);

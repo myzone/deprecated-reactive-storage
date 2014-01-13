@@ -3,7 +3,6 @@ package myzone.reactivestorage.accessor;
 import com.myzone.reactive.collection.ObservableIterable;
 import com.myzone.reactive.events.ChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
-import com.myzone.reactive.observable.Observable;
 import com.myzone.reactive.stream.collectors.ObservableCollectors;
 import com.myzone.reactivestorage.accessor.DataAccessor;
 import com.myzone.utils.Matchers;
@@ -17,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
+import static com.myzone.reactive.observable.Observable.ChangeListener;
 import static com.myzone.reactivestorage.accessor.DataAccessor.DataModificationException;
 import static com.myzone.reactivestorage.accessor.DataAccessor.Transaction;
 import static com.myzone.utils.Matchers.TransformationMatcher.namedTransformation;
@@ -62,9 +62,10 @@ public abstract class DataAccessorTest {
     public void testListeners1() throws Exception {
         ObservableIterable<Integer, ReferenceChangeEvent<Integer>> ys = accessor.getAll()
                 .filter(p -> p.getX() % 2 == 0)
-                .map(p -> p.getY()).collect(ObservableCollectors.<Integer>toObservableIterable());
+                .map(p -> p.getY())
+                .collect(ObservableCollectors.<Integer>toObservableIterable());
 
-        Observable.ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(Observable.ChangeListener.class);
+        ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(ChangeListener.class);
         ys.addListener(changeListenerMock);
 
         try (Transaction<MutablePoint> transaction = accessor.beginTransaction()) {
@@ -93,7 +94,7 @@ public abstract class DataAccessorTest {
                 .filter(p -> p.getX() % 2 == 0)
                 .map(p -> p.getY()).collect(ObservableCollectors.<Integer>toObservableIterable());
 
-        Observable.ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(Observable.ChangeListener.class);
+        ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(ChangeListener.class);
         ys.addListener(changeListenerMock);
 
         try (Transaction<MutablePoint> transaction = accessor.beginTransaction()) {
@@ -112,7 +113,7 @@ public abstract class DataAccessorTest {
 
         verify(changeListenerMock).onChange(same(ys), argThat(Matchers.<ReferenceChangeEvent<Integer>>transformationMatcher()
                 .with(namedTransformation("getOld", ReferenceChangeEvent<Integer>::getOld), new IsNull<Integer>())
-                .with(namedTransformation("getNew", ReferenceChangeEvent<Integer>::getNew), new IsEqual<Integer>(4))));
+                .with(namedTransformation("getNew", ReferenceChangeEvent<Integer>::getNew), new IsEqual<Integer>(6))));
     }
 
     @Test
@@ -121,7 +122,7 @@ public abstract class DataAccessorTest {
                 .filter(p -> p.getX() % 2 == 0)
                 .map(p -> p.getY()).collect(ObservableCollectors.<Integer>toObservableIterable());
 
-        Observable.ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(Observable.ChangeListener.class);
+        ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(ChangeListener.class);
         ys.addListener(changeListenerMock);
 
 

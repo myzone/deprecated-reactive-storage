@@ -48,7 +48,7 @@ public class DeadListenersCollectorTest {
             public void onChange(Observable<String, ? extends ReferenceChangeEvent<String>> source, ReferenceChangeEvent<String> event) {
                 ObservableReference<String, ReferenceChangeEvent<String>> strongSubscriber = weakSubscriber.get();
 
-                if (strongSubscriber == null) {
+                if (strongSubscriber != null) {
                     strongSubscriber.set(event.getNew());
                 }
             }

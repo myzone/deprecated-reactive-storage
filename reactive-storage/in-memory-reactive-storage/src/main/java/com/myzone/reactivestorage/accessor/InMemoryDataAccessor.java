@@ -2,15 +2,24 @@ package com.myzone.reactivestorage.accessor;
 
 import com.google.common.base.Preconditions;
 import com.myzone.annotations.NotNull;
+import com.myzone.reactive.events.ImmutableReferenceChangeEvent;
+import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.observable.ObservableHelper;
+import com.myzone.reactive.stream.AbstractObservableStream;
 import com.myzone.reactive.stream.ObservableStream;
 import com.rits.cloning.Cloner;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Iterators.unmodifiableIterator;
+import static com.myzone.reactive.observable.Observables.newObservableHelper;
 import static java.lang.Thread.currentThread;
 
 /**
@@ -21,16 +30,29 @@ public class InMemoryDataAccessor<T> implements DataAccessor<T> {
 
     private static final @NotNull Cloner CLONER = new Cloner();
 
+    private final @NotNull ObservableHelper<T, ReferenceChangeEvent<T>> observableHelper;
     private final @NotNull ReadWriteLock dataReadWriteLock;
     private volatile @NotNull IdentityHashMap<@NotNull T, @NotNull Integer> data;
 
     public InMemoryDataAccessor() {
+        observableHelper = newObservableHelper();
         dataReadWriteLock = new ReentrantReadWriteLock(true);
         data = new IdentityHashMap<>();
     }
 
     public @Override @NotNull ObservableStream<@NotNull T> getAll() {
-        return null;
+        dataReadWriteLock.readLock().lock();
+        try {
+            IdentityHashMap<@NotNull T, @NotNull Integer> localData = data;
+
+            return new AbstractObservableStream<T>(observableHelper) {
+                public @Override Iterator<T> iterator() {
+                    return unmodifiableIterator(localData.keySet().iterator());
+                }
+            };
+        } finally {
+            dataReadWriteLock.readLock().unlock();
+        }
     }
 
     public @Override @NotNull Transaction<T> beginTransaction() {
@@ -88,7 +110,6 @@ public class InMemoryDataAccessor<T> implements DataAccessor<T> {
 
             localData.put(o, localData.get(o) + 1);
             updated.put(o, true);
-
         }
 
         public @Override void delete(@NotNull T o) {
@@ -101,6 +122,7 @@ public class InMemoryDataAccessor<T> implements DataAccessor<T> {
         public @Override void commit() throws DataModificationException {
             dataReadWriteLock.writeLock().lock();
 
+            List<ReferenceChangeEvent<T>> eventsToFire = new ArrayList<>();
             try {
                 for (T updatedObject : updated.keySet()) {
                     Integer sharedRevision = data.get(updatedObject);
@@ -118,6 +140,22 @@ public class InMemoryDataAccessor<T> implements DataAccessor<T> {
                 }
 
                 updated.forEach((updatedObject, wasUpdated) -> {
+                    @NotNull T oldOne = CLONER.deepClone(updatedObject);
+                    @NotNull T newOne = localIdentities.get(updatedObject);
+
+                    if (oldOne == null || newOne == null) {
+                        Integer version = localData.get(updatedObject);
+
+                        if (Integer.valueOf(0).equals(version)) { // saved, so values should be swapped
+                            newOne = oldOne;
+                            oldOne = null;
+                        }
+                    }
+
+                    eventsToFire.add(new ImmutableReferenceChangeEvent<T>(oldOne, newOne));
+                });
+
+                updated.forEach((updatedObject, wasUpdated) -> {
                     if (wasUpdated) {
                         merge(localIdentities.get(updatedObject), updatedObject);
                     }
@@ -125,7 +163,13 @@ public class InMemoryDataAccessor<T> implements DataAccessor<T> {
 
                 data = localData;
             } finally {
+                dataReadWriteLock.readLock().lock();
                 dataReadWriteLock.writeLock().unlock();
+                try {
+                    eventsToFire.forEach(observableHelper::fireEvent);
+                } finally {
+                    dataReadWriteLock.readLock().unlock();
+                }
             }
 
             closed = true;
@@ -158,5 +202,6 @@ public class InMemoryDataAccessor<T> implements DataAccessor<T> {
             }
         }
     }
+
 
 }

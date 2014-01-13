@@ -71,7 +71,8 @@ public class ObservableStreamTest {
     @Test
     public void testMapAndFilter() {
         ObservableIterable<Integer, ReferenceChangeEvent<Integer>> is = observableStreamOf(asList(1, 2, 3)).map(integer -> integer + 1)
-                .filter(integer -> integer % 2 == 0).collect(ObservableCollectors.<Integer>toObservableIterable());
+                .filter(integer -> integer % 2 == 0)
+                .collect(ObservableCollectors.<Integer>toObservableIterable());
 
         assertTrue(Iterables.elementsEqual(is, asList(2, 4)));
     }

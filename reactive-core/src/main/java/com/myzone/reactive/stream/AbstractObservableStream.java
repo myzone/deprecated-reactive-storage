@@ -1,8 +1,10 @@
 package com.myzone.reactive.stream;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.AbstractIterator;
 import com.myzone.annotations.NotNull;
 import com.myzone.reactive.events.ChangeEvent;
+import com.myzone.reactive.events.ImmutableReferenceChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
 import com.myzone.reactive.observable.ObservableHelper;
@@ -25,22 +27,25 @@ import static com.myzone.reactive.observable.Observable.ChangeListener;
  */
 public abstract class AbstractObservableStream<T> implements ObservableStream<T>, Iterable<T> {
 
-    private static @NotNull DeadListenersCollector listenersCollector = Observables.getListenersCollector();
+    private static final @NotNull DeadListenersCollector LISTENERS_COLLECTOR = Observables.getListenersCollector();
 
     private final @NotNull ObservableHelper<T, ReferenceChangeEvent<T>> observableHelper;
 
     protected AbstractObservableStream() {
-        observableHelper = new ObservableHelper<>();
+        this(Observables.newObservableHelper());
+    }
+
+    protected AbstractObservableStream(@NotNull ObservableHelper<T, ReferenceChangeEvent<T>> observableHelper) {
+        this.observableHelper = observableHelper;
     }
 
     public @Override @NotNull ObservableStream<T> filter(Predicate<? super T> filter) {
-        return new FilteredObservableStream<>(this, filter);
+        return new FilteredObservableStream<>(observableHelper, this, filter);
     }
 
     public @Override @NotNull <R> ObservableStream<R> map(Function<? super T, R> mapper) {
-        return new MappedObservableStream<>(this, mapper);
+        return new MappedObservableStream<>(observableHelper, this, mapper);
     }
-
 
     public @Override @NotNull ObservableReadonlyReference<Optional<T>, ReferenceChangeEvent<Optional<T>>> reduce(BiFunction<? super T, ? super T, ? extends T> reducer) {
         ConcurrentObservableReference<Optional<T>> observableReference = new ConcurrentObservableReference<>(doReduce(reducer));
@@ -55,7 +60,7 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         };
 
         observableHelper.addListener(changeListener);
-        listenersCollector.collect(changeListener)
+        LISTENERS_COLLECTOR.collect(changeListener)
                 .afterDeathOf(weakObservableReference)
                 .via(observableHelper::removeListener);
 
@@ -66,27 +71,27 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         Consumer<T> consumer = collector.createConsumer();
         Iterator<T> iterator = iterator();
 
-        while (true) {
-            if (iterator.hasNext()) {
-                consumer.accept(iterator.next());
-            } else {
-                ObservableCollector.Summary<T, R> summary = collector.summarize(consumer);
+        iterator.forEachRemaining(consumer::accept);
 
-                R result = summary.getResult();
-                BiConsumer<T, T> onChangeListener = summary.getOnChangeListener();
+        ObservableCollector.Summary<T, R> summary = collector.summarize(consumer);
 
-                ChangeListener<T, ReferenceChangeEvent<T>> changeListener = (source, event) -> {
-                    onChangeListener.accept(event.getOld(), event.getNew());
-                };
+        R result = summary.getResult();
+        BiConsumer<T, T> onChangeListener = summary.getOnChangeListener();
 
-                observableHelper.addListener(changeListener);
-                listenersCollector.collect(changeListener)
-                        .afterDeathOf(new WeakReference<R>(result))
-                        .via(observableHelper::removeListener);
+        ChangeListener<T, ReferenceChangeEvent<T>> changeListener = (source, event) -> {
+            onChangeListener.accept(event.getOld(), event.getNew());
+        };
 
-                return summary.getResult();
-            }
-        }
+        observableHelper.addListener(changeListener);
+        LISTENERS_COLLECTOR.collect(changeListener)
+                .afterDeathOf(new WeakReference<R>(result))
+                .via(observableHelper::removeListener);
+
+        return summary.getResult();
+    }
+
+    @Override public String toString() {
+        return Objects.toStringHelper(this).add("observableHelper", observableHelper).toString();
     }
 
     protected @NotNull Optional<T> doReduce(BiFunction<? super T, ? super T, ? extends T> reducer) {
@@ -105,12 +110,26 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         }
     }
 
+    protected void fireChanges(@NotNull ReferenceChangeEvent<T> changeEvent) {
+        observableHelper.fireEvent(changeEvent);
+    }
+
     protected static class FilteredObservableStream<T> extends AbstractObservableStream<T> {
+
+        protected static @NotNull <T> Predicate<T> notNull() {
+            return o -> o != null;
+        }
 
         protected final @NotNull AbstractObservableStream<T> origin;
         protected final @NotNull Predicate<? super T> predicate;
 
-        public FilteredObservableStream(@NotNull AbstractObservableStream<T> origin, @NotNull Predicate<? super T> predicate) {
+        public FilteredObservableStream(@NotNull ObservableHelper<T, ReferenceChangeEvent<T>> observableHelper, @NotNull AbstractObservableStream<T> origin, @NotNull Predicate<? super T> predicate) {
+            super(Observables.filter(observableHelper, changeEvent -> FilteredObservableStream.<T>notNull()
+                    .and(predicate)
+                    .test(changeEvent.getNew()) || FilteredObservableStream.<T>notNull()
+                    .and(predicate)
+                    .test(changeEvent.getOld())));
+
             this.origin = origin;
             this.predicate = predicate;
         }
@@ -137,9 +156,17 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
     protected static class MappedObservableStream<S, T> extends AbstractObservableStream<T> {
 
         protected final @NotNull AbstractObservableStream<S> origin;
-        protected final @NotNull Function<? super S, T> function;
+        protected final @NotNull Function<? super S, ? extends T> function;
 
-        public MappedObservableStream(@NotNull AbstractObservableStream<S> origin, @NotNull Function<? super S, T> function) {
+        public MappedObservableStream(@NotNull ObservableHelper<S, ReferenceChangeEvent<S>> observableHelper, @NotNull AbstractObservableStream<S> origin, @NotNull Function<? super S, ? extends T> function) {
+            super(Observables.map(observableHelper, originEvent -> new ImmutableReferenceChangeEvent<>(originEvent.getOld() != null
+                                                                                                       ? function.apply(originEvent
+                    .getOld())
+                                                                                                       : null,
+                    originEvent.getNew() != null
+                    ? function.apply(originEvent.getNew())
+                    : null)));
+
             this.origin = origin;
             this.function = function;
         }

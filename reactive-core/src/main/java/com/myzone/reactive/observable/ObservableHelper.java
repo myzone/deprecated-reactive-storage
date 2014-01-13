@@ -4,18 +4,17 @@ import com.myzone.annotations.NotNull;
 import com.myzone.reactive.events.ChangeEvent;
 
 /**
- * This class should be used as observable functionality "engine" only.
+ * This interface should be used as observable functionality "engine" only.
  *
  * @author myzone
  * @date 30.12.13
  */
-public class ObservableHelper<T, E extends ChangeEvent<T>> extends AbstractObservable<T, E> {
+public interface ObservableHelper<T, E extends ChangeEvent<T>> extends Observable<T, E> {
 
-    /**
-     * Just makes this method public
-     */
-    public @Override void fireEvent(@NotNull E changeEvent) {
-        super.fireEvent(changeEvent);
-    }
+    @Override void addListener(@NotNull ChangeListener<T, ? super E> changeListener);
+
+    @Override void removeListener(@NotNull ChangeListener<T, ? super E> changeListener);
+
+    void fireEvent(@NotNull E changeEvent);
 
 }

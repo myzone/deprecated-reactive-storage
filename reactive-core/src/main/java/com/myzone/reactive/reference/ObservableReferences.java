@@ -34,6 +34,7 @@ public class ObservableReferences extends Observables {
         };
 
         subscriber.set(publisher.get());
+
         subscriber.addListener(changeListener);
         listenersCollector.collect(changeListener).afterDeathOf(weakSubscriber).via(publisher::removeListener);
     }

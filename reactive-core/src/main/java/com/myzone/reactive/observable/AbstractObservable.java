@@ -1,9 +1,12 @@
 package com.myzone.reactive.observable;
 
+import com.google.common.base.Objects;
 import com.myzone.annotations.NotNull;
 import com.myzone.reactive.events.ChangeEvent;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.google.common.base.Objects.ToStringHelper;
 
 /**
  * @author myzone
@@ -35,6 +38,14 @@ public abstract class AbstractObservable<T, E extends ChangeEvent<T>> implements
                 listener.onChange(this, changeEvent);
             });
         }
+    }
+
+    public @Override @NotNull String toString() {
+        return toStringHelper().toString() + super.toString();
+    }
+
+    protected @NotNull ToStringHelper toStringHelper() {
+        return Objects.toStringHelper(this).add("listeners", listeners);
     }
 
 }
