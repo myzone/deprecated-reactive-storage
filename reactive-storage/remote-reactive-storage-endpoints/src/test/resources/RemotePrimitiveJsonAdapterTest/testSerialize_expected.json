@@ -1,0 +1,5 @@
+{
+    "collection": "foo",
+    "type": "raw",
+    "data": "some-data"
+}

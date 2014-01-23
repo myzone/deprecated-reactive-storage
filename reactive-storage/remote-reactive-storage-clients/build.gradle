@@ -5,6 +5,8 @@ sourceCompatibility = 1.8
 version = '1.0'
 
 dependencies {
+    compile project(':reactive-storage:remote-reactive-storage-protocol')
+
     compile 'com.google.guava:guava:15.0'
 
     testCompile 'junit:junit:4.11'

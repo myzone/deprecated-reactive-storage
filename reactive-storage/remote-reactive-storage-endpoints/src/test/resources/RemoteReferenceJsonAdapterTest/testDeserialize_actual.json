@@ -1,0 +1,5 @@
+{
+    "collection": "foo",
+    "type": "ref",
+    "id": "some-id"
+}

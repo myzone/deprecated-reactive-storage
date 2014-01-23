@@ -1,0 +1,16 @@
+{
+    "collection": "foo",
+    "type": "val",
+    "fields": {
+        "bar": {
+            "collection": "foo",
+            "type": "raw",
+            "data": "ololo"
+        },
+        "baz": {
+            "collection": "foo",
+            "type": "ref",
+            "id": "some-id"
+        }
+    }
+}

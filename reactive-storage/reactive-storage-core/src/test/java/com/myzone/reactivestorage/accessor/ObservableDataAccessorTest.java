@@ -1,10 +1,9 @@
-package myzone.reactivestorage.accessor;
+package com.myzone.reactivestorage.accessor;
 
 import com.myzone.reactive.collection.ObservableIterable;
 import com.myzone.reactive.events.ChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.stream.collectors.ObservableCollectors;
-import com.myzone.reactivestorage.accessor.DataAccessor;
 import com.myzone.utils.Matchers;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
@@ -17,8 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import static com.myzone.reactive.observable.Observable.ChangeListener;
-import static com.myzone.reactivestorage.accessor.DataAccessor.DataModificationException;
-import static com.myzone.reactivestorage.accessor.DataAccessor.Transaction;
+import static com.myzone.reactivestorage.accessor.ObservableDataAccessor.DataModificationException;
+import static com.myzone.reactivestorage.accessor.ObservableDataAccessor.Transaction;
 import static com.myzone.utils.Matchers.TransformationMatcher.namedTransformation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,19 +29,19 @@ import static org.mockito.Mockito.*;
  * @author myzone
  * @date 9.7.13
  */
-public abstract class DataAccessorTest {
+public abstract class ObservableDataAccessorTest {
 
-    private final Supplier<DataAccessor<?>> dataAccessorFactory;
+    private final Supplier<ObservableDataAccessor<?>> dataAccessorFactory;
 
-    private DataAccessor<MutablePoint> accessor;
+    private ObservableDataAccessor<MutablePoint> accessor;
 
-    protected DataAccessorTest(Supplier<DataAccessor<?>> dataAccessorFactory) {
+    protected ObservableDataAccessorTest(Supplier<ObservableDataAccessor<?>> dataAccessorFactory) {
         this.dataAccessorFactory = dataAccessorFactory;
     }
 
     @Before
     public void setUp() throws Exception {
-        accessor = (DataAccessor<MutablePoint>) dataAccessorFactory.get();
+        accessor = (ObservableDataAccessor<MutablePoint>) dataAccessorFactory.get();
 
         try (Transaction<MutablePoint> transaction = accessor.beginTransaction()) {
             transaction.save(new MutablePoint(0, 0));
@@ -92,7 +91,8 @@ public abstract class DataAccessorTest {
     public void testListeners2() throws Exception {
         ObservableIterable<Integer, ReferenceChangeEvent<Integer>> ys = accessor.getAll()
                 .filter(p -> p.getX() % 2 == 0)
-                .map(p -> p.getY()).collect(ObservableCollectors.<Integer>toObservableIterable());
+                .map(p -> p.getY())
+                .collect(ObservableCollectors.<Integer>toObservableIterable());
 
         ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(ChangeListener.class);
         ys.addListener(changeListenerMock);
@@ -120,7 +120,8 @@ public abstract class DataAccessorTest {
     public void testListeners3() throws Exception {
         ObservableIterable<Integer, ReferenceChangeEvent<Integer>> ys = accessor.getAll()
                 .filter(p -> p.getX() % 2 == 0)
-                .map(p -> p.getY()).collect(ObservableCollectors.<Integer>toObservableIterable());
+                .map(p -> p.getY())
+                .collect(ObservableCollectors.<Integer>toObservableIterable());
 
         ChangeListener<Integer, ChangeEvent<Integer>> changeListenerMock = mock(ChangeListener.class);
         ys.addListener(changeListenerMock);
@@ -166,7 +167,9 @@ public abstract class DataAccessorTest {
         }
 
         try (Transaction<MutablePoint> transaction2 = accessor.beginTransaction()) {
-            assertEquals(transaction2.getAll().filter(point -> transaction2.transactional(point).getX() == 10).count(), 1);
+            assertEquals(transaction2.getAll()
+                    .filter(point -> transaction2.transactional(point).getX() == 10)
+                    .count(), 1);
         }
     }
 
@@ -219,7 +222,9 @@ public abstract class DataAccessorTest {
     @Test
     public void testDataCorruption() throws Exception {
         try (Transaction<MutablePoint> transaction1 = accessor.beginTransaction()) {
-            assertEquals(transaction1.getAll().filter(point -> transaction1.transactional(point).getX() == 0).count(), 1);
+            assertEquals(transaction1.getAll()
+                    .filter(point -> transaction1.transactional(point).getX() == 0)
+                    .count(), 1);
 
             MutablePoint mutablePoint = transaction1.getAll()
                     .filter(point -> transaction1.transactional(point).getX() == 0)
@@ -307,8 +312,8 @@ public abstract class DataAccessorTest {
 
     @Test
     public void testManyAccessors() throws Exception {
-        DataAccessor<MutablePoint> accessor1 = (DataAccessor<MutablePoint>) dataAccessorFactory.get();
-        DataAccessor<MutablePoint> accessor2 = (DataAccessor<MutablePoint>) dataAccessorFactory.get();
+        ObservableDataAccessor<MutablePoint> accessor1 = (ObservableDataAccessor<MutablePoint>) dataAccessorFactory.get();
+        ObservableDataAccessor<MutablePoint> accessor2 = (ObservableDataAccessor<MutablePoint>) dataAccessorFactory.get();
 
         MutablePoint mutablePoint = new MutablePoint(10, 10);
 
@@ -351,7 +356,7 @@ public abstract class DataAccessorTest {
         wrapper2.add("ololo1");
         wrapper2.add("ololo3");
 
-        DataAccessor<Wrapper> wrapperDataAccessor = (DataAccessor<Wrapper>) dataAccessorFactory.get();
+        ObservableDataAccessor<Wrapper> wrapperDataAccessor = (ObservableDataAccessor<Wrapper>) dataAccessorFactory.get();
         try (Transaction<Wrapper> wrapperTransaction1 = wrapperDataAccessor.beginTransaction()) {
             wrapperTransaction1.save(wrapper1);
             wrapperTransaction1.save(wrapper2);

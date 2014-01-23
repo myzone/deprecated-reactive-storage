@@ -5,9 +5,10 @@ sourceCompatibility = 1.8
 version = '1.0'
 
 dependencies {
+    compile project(':commons')
+    compile project(':reactive-core')
+
     compile 'com.google.guava:guava:15.0'
-    compile 'com.google.code.gson:gson:2.2.4'
-    compile 'io.netty:netty-all:5.0.0.Alpha1'
 
     testCompile 'junit:junit:4.11'
     testCompile 'org.hamcrest:hamcrest-all:1.3'

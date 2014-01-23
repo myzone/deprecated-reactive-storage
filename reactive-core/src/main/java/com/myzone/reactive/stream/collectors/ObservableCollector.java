@@ -39,13 +39,17 @@ public interface ObservableCollector<T, E extends ChangeEvent<T>, R extends Obse
         }
 
         public @Override boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
 
             Summary summary = (Summary) o;
 
-            if (!onChangeListener.equals(summary.onChangeListener)) return false;
-            if (!result.equals(summary.result)) return false;
+            if (!onChangeListener.equals(summary.onChangeListener))
+                return false;
+            if (!result.equals(summary.result))
+                return false;
 
             return true;
         }

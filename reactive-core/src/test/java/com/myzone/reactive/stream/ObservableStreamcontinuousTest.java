@@ -41,7 +41,8 @@ public class ObservableStreamContinuousTest {
             public @Override Iterator<String> iterator() {
                 return list.iterator();
             }
-        }.filter(integer -> Integer.parseInt(integer) % 2 != 0).collect(ObservableCollectors.<String>toObservableIterable());
+        }.filter(integer -> Integer.parseInt(integer) % 2 != 0)
+                .collect(ObservableCollectors.<String>toObservableIterable());
         is.addListener(changeListenerMock);
     }
 

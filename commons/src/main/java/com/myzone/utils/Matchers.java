@@ -135,12 +135,9 @@ public class Matchers extends UtilityClass {
 
                 TransformationData that = (TransformationData) o;
 
-                if (!name.equals(that.name))
-                    return false;
-                if (!transformationFunction.equals(that.transformationFunction))
-                    return false;
-                if (!transformationMatcher.equals(that.transformationMatcher))
-                    return false;
+                if (!name.equals(that.name)) return false;
+                if (!transformationFunction.equals(that.transformationFunction)) return false;
+                if (!transformationMatcher.equals(that.transformationMatcher)) return false;
 
                 return true;
             }

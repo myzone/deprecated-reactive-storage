@@ -26,7 +26,7 @@ import static java.lang.Thread.currentThread;
  * @author myzone
  * @date 11.01.14
  */
-public class InMemoryDataAccessor<T> implements DataAccessor<T> {
+public class ObservableInMemoryDataAccessor<T> implements ObservableDataAccessor<T> {
 
     private static final @NotNull Cloner CLONER = new Cloner();
 
@@ -34,7 +34,7 @@ public class InMemoryDataAccessor<T> implements DataAccessor<T> {
     private final @NotNull ReadWriteLock dataReadWriteLock;
     private volatile @NotNull IdentityHashMap<@NotNull T, @NotNull Integer> data;
 
-    public InMemoryDataAccessor() {
+    public ObservableInMemoryDataAccessor() {
         observableHelper = newObservableHelper();
         dataReadWriteLock = new ReentrantReadWriteLock(true);
         data = new IdentityHashMap<>();
