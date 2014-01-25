@@ -2,6 +2,7 @@ package com.myzone.utils.async;
 
 import com.google.common.base.Objects;
 import com.myzone.annotations.Callback;
+import com.myzone.annotations.Immutable;
 import com.myzone.annotations.NotNull;
 import com.myzone.utils.UtilityClass;
 import com.myzone.utils.math.Counter;
@@ -20,7 +21,7 @@ import static com.myzone.utils.math.Counters.min;
 
 public class AsyncProviders extends UtilityClass {
 
-    public static @NotNull <T, D>  AsyncProvider<T> createDelayedProvider(BiConsumer<Runnable, D> delayMaker, D delay, AsyncProvider<T> asyncProvider) {
+    public static @NotNull <T, D> AsyncProvider<T> createDelayedProvider(BiConsumer<Runnable, D> delayMaker, D delay, AsyncProvider<T> asyncProvider) {
         return new DelayedAsyncProvider<>(delayMaker, delay, asyncProvider);
     }
     
@@ -28,7 +29,7 @@ public class AsyncProviders extends UtilityClass {
         return new AsyncProviderWithFallback<>(origin, failurePredicate, fallbackAsyncProvider);
     }
     
-    public static @NotNull <T, C>  AsyncProvider<T> createRetryProvider(AsyncProvider<T> origin, Range<C> retriesRange, Predicate<? super T> failurePredicate, AsyncProvider<T> fallbackAsyncProvider) {
+    public static @NotNull <T, C> AsyncProvider<T> createRetryProvider(AsyncProvider<T> origin, Range<C> retriesRange, Predicate<? super T> failurePredicate, AsyncProvider<T> fallbackAsyncProvider) {
         return new RetryAsyncProvider<>(origin, retriesRange, failurePredicate, fallbackAsyncProvider);
     }
 
@@ -59,11 +60,11 @@ public class AsyncProviders extends UtilityClass {
         });
     }
     
-    protected static class DelayedAsyncProvider<T, D> implements AsyncProvider<T> {
+    protected static @Immutable class DelayedAsyncProvider<T, D> implements AsyncProvider<T> {
 
-        private final @NotNull BiConsumer<@NotNull Runnable, @NotNull D> delayMaker;
-        private final @NotNull D delay;
-        private final @NotNull AsyncProvider<T> asyncProvider;
+        protected final @NotNull BiConsumer<@NotNull Runnable, @NotNull D> delayMaker;
+        protected final @NotNull D delay;
+        protected final @NotNull AsyncProvider<T> asyncProvider;
 
         public DelayedAsyncProvider(BiConsumer<@NotNull Runnable, @NotNull D> delayMaker, @NotNull D delay, @NotNull AsyncProvider<T> asyncProvider) {
             this.delayMaker = delayMaker;
@@ -96,7 +97,8 @@ public class AsyncProviders extends UtilityClass {
         }
 
         public @Override String toString() {
-            return Objects.toStringHelper(this)
+            return Objects
+                    .toStringHelper(this)
                     .add("delayMaker", delayMaker)
                     .add("delay", delay)
                     .add("asyncProvider", asyncProvider)
@@ -105,7 +107,7 @@ public class AsyncProviders extends UtilityClass {
 
     }
 
-    protected static class AsyncProviderWithFallback<T> implements AsyncProvider<T> {
+    protected static @Immutable class AsyncProviderWithFallback<T> implements AsyncProvider<T> {
 
         protected final @NotNull AsyncProvider<T> originAsyncProvider;
         protected final @NotNull Predicate<? super T> failurePredicate;
@@ -148,7 +150,8 @@ public class AsyncProviders extends UtilityClass {
         }
 
         public @Override String toString() {
-            return Objects.toStringHelper(this)
+            return Objects
+                    .toStringHelper(this)
                     .add("originProvider", originAsyncProvider)
                     .add("failurePredicate", failurePredicate)
                     .add("fallbackProvider", fallbackAsyncProvider)
@@ -159,8 +162,8 @@ public class AsyncProviders extends UtilityClass {
     
     protected static class RetryAsyncProvider<T, C> extends AsyncProviderWithFallback<T> {
 
-        private @NotNull Counter<C> current;
-        private final @NotNull Counter<C> end;
+        protected @NotNull Counter<C> current;
+        protected final @NotNull Counter<C> end;
 
         public RetryAsyncProvider(@NotNull AsyncProvider<T> origin, @NotNull Range<C> retriesRange, @NotNull Predicate<? super T> failurePredicate, AsyncProvider<T> fallbackAsyncProvider) {
             super(origin, failurePredicate, fallbackAsyncProvider);
@@ -213,7 +216,8 @@ public class AsyncProviders extends UtilityClass {
         }
 
         public @Override String toString() {
-            return Objects.toStringHelper(this)
+            return Objects
+                    .toStringHelper(this)
                     .add("originProvider", originAsyncProvider)
                     .add("retriesLeft", current.get())
                     .add("failurePredicate", failurePredicate)
@@ -223,9 +227,9 @@ public class AsyncProviders extends UtilityClass {
         
     }
 
-    protected static class ParallelAsyncProvider<T> implements AsyncProvider<T> {
+    protected static @Immutable class ParallelAsyncProvider<T> implements AsyncProvider<T> {
 
-        private final @NotNull AsyncProvider<T>[] diagnosticsAsyncProviders;
+        protected final @NotNull AsyncProvider<T>[] diagnosticsAsyncProviders;
 
         public ParallelAsyncProvider(AsyncProvider<T>... diagnosticsAsyncProviders) {
             if (diagnosticsAsyncProviders == null || diagnosticsAsyncProviders.length == 0)
@@ -258,20 +262,21 @@ public class AsyncProviders extends UtilityClass {
         }
 
         public @Override int hashCode() {
-            return diagnosticsAsyncProviders != null ? Arrays.hashCode(diagnosticsAsyncProviders) : 0;
+            return Arrays.hashCode(diagnosticsAsyncProviders);
         }
 
         public @Override String toString() {
-            return Objects.toStringHelper(this)
+            return Objects
+                    .toStringHelper(this)
                     .add("diagnosticsProviders", diagnosticsAsyncProviders)
                     .toString();
         }
         
     }
 
-    protected static class ValueAsyncProvider<T> implements AsyncProvider<T> {
+    protected static @Immutable class ValueAsyncProvider<T> implements AsyncProvider<T> {
 
-        private final T value;
+        protected final T value;
 
         public ValueAsyncProvider(T value) {
             this.value = value;
@@ -299,18 +304,19 @@ public class AsyncProviders extends UtilityClass {
         }
 
         public @Override String toString() {
-            return Objects.toStringHelper(this)
+            return Objects
+                    .toStringHelper(this)
                     .add("value", value)
                     .toString();
         }
         
     }
     
-    protected static class LoggingAsyncProvider<T> implements AsyncProvider<T> {
+    protected static @Immutable class LoggingAsyncProvider<T> implements AsyncProvider<T> {
 
-        private final @NotNull AsyncProvider<T> asyncProvider;
-        private final @NotNull Consumer<AsyncProvider<T>> onProvide;
-        private final @NotNull BiConsumer<AsyncProvider<T>, T> onResult;
+        protected final @NotNull AsyncProvider<T> asyncProvider;
+        protected final @NotNull Consumer<AsyncProvider<T>> onProvide;
+        protected final @NotNull BiConsumer<AsyncProvider<T>, T> onResult;
 
         public LoggingAsyncProvider(@NotNull AsyncProvider<T> asyncProvider, @NotNull Consumer<AsyncProvider<T>> onProvide, @NotNull BiConsumer<AsyncProvider<T>, T> onResult) {
             this.asyncProvider = asyncProvider;
@@ -349,7 +355,8 @@ public class AsyncProviders extends UtilityClass {
         }
 
         public @Override String toString() {
-            return Objects.toStringHelper(this)
+            return Objects
+                    .toStringHelper(this)
                     .add("asyncProvider", asyncProvider)
                     .add("onProvide", onProvide)
                     .add("onResult", onResult)
