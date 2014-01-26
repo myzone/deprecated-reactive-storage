@@ -12,7 +12,7 @@ public @Immutable class ImmutableTuple<D, T extends Tuple> implements Tuple<D, T
     private final D data;
     private final @NotNull T next;
 
-    public ImmutableTuple(D data, @NotNull T next) {
+    protected ImmutableTuple(D data, @NotNull T next) {
         this.data = data;
         this.next = next;
     }
@@ -23,6 +23,10 @@ public @Immutable class ImmutableTuple<D, T extends Tuple> implements Tuple<D, T
 
     public @Override @NotNull T next() {
         return next;
+    }
+
+    public static @NotNull <D, T extends Tuple> ImmutableTuple<D, T> of(D data, @NotNull T next) {
+        return new ImmutableTuple<>(data, next);
     }
 
 }
