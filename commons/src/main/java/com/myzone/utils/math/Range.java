@@ -27,17 +27,20 @@ public interface Range<T> extends Iterable<Counter<T>> {
                                                      ? counter -> counter.compareTo(end) >= 0
                                                      : counter -> counter.compareTo(end) < 0;
 
-        Function<Counter<T>, Counter<T>> getNextFunction = start.compareTo(end) > 0
+        Function<Counter<T>, Counter<T>> nextFunction = start.compareTo(end) < 0
                                                            ? Counter<T>::increment
                                                            : Counter<T>::decrement;
 
         return new AbstractIterator<Counter<T>>() {
 
-            private @NotNull Counter<T> current = start;
+            private @NotNull Counter<T> next = start;
 
             protected @Override Counter<T> computeNext() {
-                if (endBoundaryPredicate.test(current)) {
-                    return current = getNextFunction.apply(current);
+                Counter<T> result = next;
+                if (endBoundaryPredicate.test(result)) {
+                    next = nextFunction.apply(result);
+
+                    return result;
                 } else {
                     return endOfData();
                 }
