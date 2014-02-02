@@ -6,12 +6,12 @@ import java.util.function.BiFunction;
 
 /**
  * @author myzone
- * @date 30.01.14.
+ * @date 02.02.14.
  */
-public interface SemiGroup<T> extends Groupoid<T> {
+public interface CommutativeGroup<T> extends Group<T> {
 
     /**
-     * @return <b>associative<b> binary function
+     * @return <b>associative<b> and <b>commutative</b> binary function
      */
     @Override @NotNull BiFunction<T, T, T> getFunction();
 

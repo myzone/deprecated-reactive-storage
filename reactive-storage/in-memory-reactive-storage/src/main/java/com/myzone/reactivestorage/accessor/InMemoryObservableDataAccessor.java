@@ -7,7 +7,7 @@ import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.observable.ObservableHelper;
 import com.myzone.reactive.stream.AbstractObservableStream;
 import com.myzone.reactive.stream.ObservableStream;
-import com.rits.cloning.Cloner;
+import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -21,20 +21,21 @@ import java.util.stream.Stream;
 import static com.google.common.collect.Iterators.unmodifiableIterator;
 import static com.myzone.reactive.observable.Observables.newObservableHelper;
 import static java.lang.Thread.currentThread;
+import static java.lang.reflect.Modifier.isStatic;
 
 /**
  * @author myzone
  * @date 11.01.14
  */
-public class ObservableInMemoryDataAccessor<T> implements ObservableDataAccessor<T> {
+public class InMemoryObservableDataAccessor<T> implements ObservableDataAccessor<T> {
 
-    private static final @NotNull Cloner CLONER = new Cloner();
+    private static final Unsafe UNSAFE = getUnsafe();
 
     private final @NotNull ObservableHelper<T, ReferenceChangeEvent<T>> observableHelper;
     private final @NotNull ReadWriteLock dataReadWriteLock;
     private volatile @NotNull IdentityHashMap<@NotNull T, @NotNull Integer> data;
 
-    public ObservableInMemoryDataAccessor() {
+    public InMemoryObservableDataAccessor() {
         observableHelper = newObservableHelper();
         dataReadWriteLock = new ReentrantReadWriteLock(true);
         data = new IdentityHashMap<>();
@@ -59,6 +60,52 @@ public class ObservableInMemoryDataAccessor<T> implements ObservableDataAccessor
         return new InMemoryTransaction();
     }
 
+    protected static <T> T shallowClone(T origin) {
+        T copy = newInstance((Class<T>) origin.getClass());
+
+        merge(origin, copy);
+
+        return copy;
+    }
+
+    protected static <T> void merge(T from, T to) {
+        if (!from.getClass().equals(to.getClass())) {
+            throw new IllegalArgumentException();
+        }
+
+        Field[] fields = to.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            if (!isStatic(field.getModifiers())) {
+                try {
+                    field.setAccessible(true);
+                    field.set(to, field.get(from));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static <T> T newInstance(Class<T> clazz) {
+        try {
+            return (T) UNSAFE.allocateInstance(clazz);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Unsafe getUnsafe() {
+        try {
+            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            return (Unsafe) field.get(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected class InMemoryTransaction implements Transaction<T> {
 
         private final @NotNull Thread ownerThread;
@@ -81,7 +128,7 @@ public class ObservableInMemoryDataAccessor<T> implements ObservableDataAccessor
             updated = new IdentityHashMap<>();
             localIdentities = new IdentityHashMap<>();
             localData.forEach((dataEntry, version) -> {
-                localIdentities.put(dataEntry, CLONER.deepClone(dataEntry));
+                localIdentities.put(dataEntry, shallowClone(dataEntry));
             });
             closed = false;
         }
@@ -140,7 +187,7 @@ public class ObservableInMemoryDataAccessor<T> implements ObservableDataAccessor
                 }
 
                 updated.forEach((updatedObject, wasUpdated) -> {
-                    @NotNull T oldOne = CLONER.deepClone(updatedObject);
+                    @NotNull T oldOne = shallowClone(updatedObject);
                     @NotNull T newOne = localIdentities.get(updatedObject);
 
                     if (oldOne == null || newOne == null) {
@@ -185,23 +232,5 @@ public class ObservableInMemoryDataAccessor<T> implements ObservableDataAccessor
         }
 
     }
-
-    protected static <T> void merge(T from, T to) {
-        if (!from.getClass().equals(to.getClass())) {
-            throw new IllegalArgumentException();
-        }
-
-        Field[] fields = to.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
-            try {
-                field.setAccessible(true);
-                field.set(to, field.get(from));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
 
 }
