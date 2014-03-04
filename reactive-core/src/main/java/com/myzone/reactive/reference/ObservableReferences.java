@@ -29,7 +29,7 @@ public class ObservableReferences extends Observables {
         return new ReducedObservableReference<>(left, right, reducer);
     }
 
-    public static <T> void bind(@NotNull ObservableReference<T, ReferenceChangeEvent<T>> subscriber, @NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> publisher) {
+    public static <T> Observable.ChangeListener<T, ReferenceChangeEvent<T>> bind(@NotNull ObservableReference<T, ReferenceChangeEvent<T>> subscriber, @NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> publisher) {
         WeakReference<ObservableReference<T, ReferenceChangeEvent<T>>> weakSubscriber = new WeakReference<>(subscriber);
         Observable.ChangeListener<T, ReferenceChangeEvent<T>> changeListener = (source, event) -> {
             ObservableReference<T, ReferenceChangeEvent<T>> strongSubscriber = weakSubscriber.get();
@@ -40,9 +40,13 @@ public class ObservableReferences extends Observables {
         };
 
         subscriber.set(publisher.get());
+        publisher.addListener(changeListener);
+        listenersCollector
+                .collect(changeListener)
+                .afterDeathOf(weakSubscriber)
+                .via(publisher::removeListener);
 
-        subscriber.addListener(changeListener);
-        listenersCollector.collect(changeListener).afterDeathOf(weakSubscriber).via(publisher::removeListener);
+        return changeListener;
     }
 
     protected static class MappedObservableReference<S, T> extends AbstractObservable<T, ReferenceChangeEvent<T>> implements ObservableReadonlyReference<T, ReferenceChangeEvent<T>> {
