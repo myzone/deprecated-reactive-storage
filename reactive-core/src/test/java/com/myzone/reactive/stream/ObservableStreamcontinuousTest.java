@@ -23,6 +23,8 @@ import static org.mockito.Mockito.*;
  */
 public class ObservableStreamContinuousTest {
 
+    private static final int DEFAULT_TIMEOUT = 500;
+
     private Observable.ChangeListener<String, ReferenceChangeEvent<String>> changeListenerMock;
     private ObservableHelper<String, ReferenceChangeEvent<String>> helper;
     private List<String> list;
@@ -50,28 +52,28 @@ public class ObservableStreamContinuousTest {
     public void test1() throws Exception {
         list.add("4");
         helper.fireEvent(ImmutableReferenceChangeEvent.of(null, "4"));
-        verify(changeListenerMock, never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT).never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
     public void test2() throws Exception {
         list.add("5");
         helper.fireEvent(ImmutableReferenceChangeEvent.of(null, "5"));
-        verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT)).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
     public void test3() throws Exception {
         list.remove("4");
         helper.fireEvent(ImmutableReferenceChangeEvent.of("4", null));
-        verify(changeListenerMock, never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT).never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
     public void test4() throws Exception {
         list.remove("5");
         helper.fireEvent(ImmutableReferenceChangeEvent.of("5", null));
-        verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT)).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
@@ -79,7 +81,7 @@ public class ObservableStreamContinuousTest {
         list.remove("3");
         list.add("4");
         helper.fireEvent(ImmutableReferenceChangeEvent.of("3", "4"));
-        verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT)).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
@@ -87,7 +89,7 @@ public class ObservableStreamContinuousTest {
         list.remove("2");
         list.add("4");
         helper.fireEvent(ImmutableReferenceChangeEvent.of("2", "4"));
-        verify(changeListenerMock, never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT).never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
@@ -95,7 +97,7 @@ public class ObservableStreamContinuousTest {
         list.remove("3");
         list.add("5");
         helper.fireEvent(ImmutableReferenceChangeEvent.of("3", "5"));
-        verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT)).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
@@ -103,7 +105,7 @@ public class ObservableStreamContinuousTest {
         list.remove("2");
         list.add("5");
         helper.fireEvent(ImmutableReferenceChangeEvent.of("2", "5"));
-        verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
+        verify(changeListenerMock, timeout(DEFAULT_TIMEOUT)).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
 }

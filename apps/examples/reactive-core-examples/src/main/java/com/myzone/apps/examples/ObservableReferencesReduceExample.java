@@ -16,7 +16,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 
 /**
  * @author myzone
- * @date 04.03.14.
+ * @date 04.03.14
  */
 public class ObservableReferencesReduceExample {
 

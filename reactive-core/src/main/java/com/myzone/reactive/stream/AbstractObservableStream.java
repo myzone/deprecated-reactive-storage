@@ -60,7 +60,8 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         };
 
         observableHelper.addListener(changeListener);
-        LISTENERS_COLLECTOR.collect(changeListener)
+        LISTENERS_COLLECTOR
+                .collect(changeListener)
                 .afterDeathOf(weakObservableReference)
                 .via(observableHelper::removeListener);
 
@@ -83,7 +84,8 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         };
 
         observableHelper.addListener(changeListener);
-        LISTENERS_COLLECTOR.collect(changeListener)
+        LISTENERS_COLLECTOR
+                .collect(changeListener)
                 .afterDeathOf(new WeakReference<R>(result))
                 .via(observableHelper::removeListener);
 
@@ -159,13 +161,14 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         protected final @NotNull Function<? super S, ? extends T> function;
 
         public MappedObservableStream(@NotNull ObservableHelper<S, ReferenceChangeEvent<S>> observableHelper, @NotNull AbstractObservableStream<S> origin, @NotNull Function<? super S, ? extends T> function) {
-            super(Observables.map(observableHelper, originEvent -> ImmutableReferenceChangeEvent.of(originEvent.getOld() != null
-                                                                                                    ? function.apply(originEvent
-                    .getOld())
-                                                                                                    : null, originEvent.getNew() != null
-                                                                                                            ? function.apply(originEvent
-                    .getNew())
-                                                                                                            : null)));
+            super(Observables.map(observableHelper, originEvent -> ImmutableReferenceChangeEvent.of(
+                    originEvent.getOld() != null
+                            ? function.apply(originEvent.getOld())
+                            : null,
+                    originEvent.getNew() != null
+                            ? function.apply(originEvent.getNew())
+                            : null)
+            ));
 
             this.origin = origin;
             this.function = function;

@@ -4,7 +4,6 @@ import com.myzone.annotations.NotNull;
 import com.myzone.reactive.events.ImmutableReferenceChangeEvent;
 import com.myzone.reactive.events.ReferenceChangeEvent;
 import com.myzone.reactive.observable.AbstractObservable;
-import com.myzone.reactive.observable.Observable;
 import com.myzone.reactive.observable.Observables;
 import com.myzone.reactive.utils.DeadListenersCollector;
 
@@ -12,6 +11,8 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static com.myzone.reactive.observable.Observable.ChangeListener;
 
 /**
  * @author myzone
@@ -29,9 +30,9 @@ public class ObservableReferences extends Observables {
         return new ReducedObservableReference<>(left, right, reducer);
     }
 
-    public static <T> Observable.ChangeListener<T, ReferenceChangeEvent<T>> bind(@NotNull ObservableReference<T, ReferenceChangeEvent<T>> subscriber, @NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> publisher) {
+    public static @NotNull <T> Binding bind(@NotNull ObservableReference<T, ReferenceChangeEvent<T>> subscriber, @NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> publisher) {
         WeakReference<ObservableReference<T, ReferenceChangeEvent<T>>> weakSubscriber = new WeakReference<>(subscriber);
-        Observable.ChangeListener<T, ReferenceChangeEvent<T>> changeListener = (source, event) -> {
+        ChangeListener<T, ReferenceChangeEvent<T>> changeListener = (source, event) -> {
             ObservableReference<T, ReferenceChangeEvent<T>> strongSubscriber = weakSubscriber.get();
 
             if (subscriber != null) {
@@ -46,7 +47,13 @@ public class ObservableReferences extends Observables {
                 .afterDeathOf(weakSubscriber)
                 .via(publisher::removeListener);
 
-        return changeListener;
+        return () -> publisher.removeListener(changeListener);
+    }
+
+    public interface Binding {
+
+        void dispose();
+
     }
 
     protected static class MappedObservableReference<S, T> extends AbstractObservable<T, ReferenceChangeEvent<T>> implements ObservableReadonlyReference<T, ReferenceChangeEvent<T>> {

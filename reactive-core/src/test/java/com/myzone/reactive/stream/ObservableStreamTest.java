@@ -21,16 +21,14 @@ public class ObservableStreamTest {
 
     @Test
     public void testCollect() {
-        ObservableIterable<Integer, ReferenceChangeEvent<Integer>> is = observableStreamOf(asList(1, 2, 3)).collect(ObservableCollectors
-                .<Integer>toObservableIterable());
+        ObservableIterable<Integer, ReferenceChangeEvent<Integer>> is = observableStreamOf(asList(1, 2, 3)).collect(ObservableCollectors.<Integer>toObservableIterable());
 
         assertTrue(Iterables.elementsEqual(is, asList(1, 2, 3)));
     }
 
     @Test
     public void testFilter() {
-        ObservableIterable<Integer, ReferenceChangeEvent<Integer>> is = observableStreamOf(asList(1, 2, 3)).filter(integer -> integer % 2 != 0)
-                .collect(ObservableCollectors.<Integer>toObservableIterable());
+        ObservableIterable<Integer, ReferenceChangeEvent<Integer>> is = observableStreamOf(asList(1, 2, 3)).filter(integer -> integer % 2 != 0).collect(ObservableCollectors.<Integer>toObservableIterable());
 
         assertTrue(Iterables.elementsEqual(is, asList(1, 3)));
     }
@@ -45,24 +43,21 @@ public class ObservableStreamTest {
 
     @Test
     public void testReduceEmpty() {
-        ObservableReadonlyReference<Optional<Object>, ReferenceChangeEvent<Optional<Object>>> i = observableStreamOf(asList())
-                .reduce((l, r) -> l.hashCode() > r.hashCode() ? l : r);
+        ObservableReadonlyReference<Optional<Object>, ReferenceChangeEvent<Optional<Object>>> i = observableStreamOf(asList()).reduce((l, r) -> l.hashCode() > r.hashCode() ? l : r);
 
         assertFalse(i.get().isPresent());
     }
 
     @Test
     public void testReduceOne() {
-        ObservableReadonlyReference<Optional<Integer>, ReferenceChangeEvent<Optional<Integer>>> i = observableStreamOf(asList(42))
-                .reduce((l, r) -> l + r);
+        ObservableReadonlyReference<Optional<Integer>, ReferenceChangeEvent<Optional<Integer>>> i = observableStreamOf(asList(42)).reduce((l, r) -> l + r);
 
         assertEquals(42, (int) i.get().get());
     }
 
     @Test
     public void testReduce() {
-        ObservableReadonlyReference<Optional<Integer>, ReferenceChangeEvent<Optional<Integer>>> i = observableStreamOf(asList(1, 2, 3))
-                .reduce((l, r) -> l + r);
+        ObservableReadonlyReference<Optional<Integer>, ReferenceChangeEvent<Optional<Integer>>> i = observableStreamOf(asList(1, 2, 3)).reduce((l, r) -> l + r);
 
         assertEquals(6, (int) i.get().get());
     }
