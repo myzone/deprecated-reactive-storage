@@ -61,7 +61,7 @@ public final class ObservableCollectors extends UtilityClass {
                 };
 
                 return new Summary<>(result, (oldValue, newValue) -> {
-                    ReferenceChangeEvent<T> changeEvent = new ImmutableReferenceChangeEvent<>(oldValue, newValue);
+                    ReferenceChangeEvent<T> changeEvent = ImmutableReferenceChangeEvent.of(oldValue, newValue);
 
                     changeListeners.forEach(listener -> {
                         listener.onChange(result, changeEvent);

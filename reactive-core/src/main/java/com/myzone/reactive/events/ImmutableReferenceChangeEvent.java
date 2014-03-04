@@ -12,7 +12,7 @@ public @Immutable class ImmutableReferenceChangeEvent<T> implements ReferenceCha
     private final T oldValue;
     private final T newValue;
 
-    public ImmutableReferenceChangeEvent(T oldValue, T newValue) {
+    private ImmutableReferenceChangeEvent(T oldValue, T newValue) {
         this.oldValue = oldValue;
         this.newValue = newValue;
     }
@@ -48,7 +48,14 @@ public @Immutable class ImmutableReferenceChangeEvent<T> implements ReferenceCha
     }
 
     public @Override String toString() {
-        return Objects.toStringHelper(this).add("oldValue", oldValue).add("newValue", newValue).toString();
+        return Objects.toStringHelper(this)
+                .add("oldValue", oldValue)
+                .add("newValue", newValue)
+                .toString();
+    }
+
+    public static <T> ImmutableReferenceChangeEvent<T> of(T oldValue, T newValue) {
+        return new ImmutableReferenceChangeEvent<T>(oldValue, newValue);
     }
 
 }

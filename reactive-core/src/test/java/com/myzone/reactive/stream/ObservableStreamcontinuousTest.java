@@ -49,28 +49,28 @@ public class ObservableStreamContinuousTest {
     @Test
     public void test1() throws Exception {
         list.add("4");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>(null, "4"));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of(null, "4"));
         verify(changeListenerMock, never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
     public void test2() throws Exception {
         list.add("5");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>(null, "5"));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of(null, "5"));
         verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
     public void test3() throws Exception {
         list.remove("4");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>("4", null));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of("4", null));
         verify(changeListenerMock, never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
     @Test
     public void test4() throws Exception {
         list.remove("5");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>("5", null));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of("5", null));
         verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
@@ -78,7 +78,7 @@ public class ObservableStreamContinuousTest {
     public void test5() throws Exception {
         list.remove("3");
         list.add("4");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>("3", "4"));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of("3", "4"));
         verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
@@ -86,7 +86,7 @@ public class ObservableStreamContinuousTest {
     public void test6() throws Exception {
         list.remove("2");
         list.add("4");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>("2", "4"));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of("2", "4"));
         verify(changeListenerMock, never()).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
@@ -94,7 +94,7 @@ public class ObservableStreamContinuousTest {
     public void test7() throws Exception {
         list.remove("3");
         list.add("5");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>("3", "5"));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of("3", "5"));
         verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 
@@ -102,7 +102,7 @@ public class ObservableStreamContinuousTest {
     public void test8() throws Exception {
         list.remove("2");
         list.add("5");
-        helper.fireEvent(new ImmutableReferenceChangeEvent<>("2", "5"));
+        helper.fireEvent(ImmutableReferenceChangeEvent.of("2", "5"));
         verify(changeListenerMock).onChange(any(Observable.class), any(ReferenceChangeEvent.class));
     }
 

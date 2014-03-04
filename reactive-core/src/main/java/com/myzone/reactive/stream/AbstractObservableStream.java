@@ -159,13 +159,13 @@ public abstract class AbstractObservableStream<T> implements ObservableStream<T>
         protected final @NotNull Function<? super S, ? extends T> function;
 
         public MappedObservableStream(@NotNull ObservableHelper<S, ReferenceChangeEvent<S>> observableHelper, @NotNull AbstractObservableStream<S> origin, @NotNull Function<? super S, ? extends T> function) {
-            super(Observables.map(observableHelper, originEvent -> new ImmutableReferenceChangeEvent<>(originEvent.getOld() != null
-                                                                                                       ? function.apply(originEvent
+            super(Observables.map(observableHelper, originEvent -> ImmutableReferenceChangeEvent.of(originEvent.getOld() != null
+                                                                                                    ? function.apply(originEvent
                     .getOld())
-                                                                                                       : null,
-                    originEvent.getNew() != null
-                    ? function.apply(originEvent.getNew())
-                    : null)));
+                                                                                                    : null, originEvent.getNew() != null
+                                                                                                            ? function.apply(originEvent
+                    .getNew())
+                                                                                                            : null)));
 
             this.origin = origin;
             this.function = function;

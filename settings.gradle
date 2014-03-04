@@ -1,4 +1,7 @@
-include 'commons',
+include 'apps',
+        'apps:examples',
+        'apps:examples:reactive-core-examples',
+        'commons',
         'reactive-core',
         'reactive-storage',
         'reactive-storage:in-memory-reactive-storage',

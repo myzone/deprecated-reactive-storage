@@ -32,23 +32,27 @@ public class Observables extends UtilityClass {
         return new SimpleObservableHelper<>();
     }
 
+    @Deprecated
     public static @NotNull <T, E extends ChangeEvent<T>> FilteredObservable<T, E> filter(@NotNull Observable<T, E> origin, @NotNull Predicate<E> predicate) {
         return new FilteredObservable<>(origin, predicate);
     }
 
+    @Deprecated
     public static @NotNull <T, E extends ChangeEvent<T>> FilteredObservableHelper<T, E> filter(@NotNull ObservableHelper<T, E> origin, @NotNull Predicate<E> predicate) {
         return new FilteredObservableHelper<>(origin, predicate);
     }
 
+    @Deprecated
     public static @NotNull <S, T, ES extends ChangeEvent<S>, ET extends ChangeEvent<T>> Observable<T, ET> map(@NotNull Observable<S, ES> origin, @NotNull Function<ES, ET> mapper) {
         return new MappedObservable<>(origin, mapper);
     }
 
+    @Deprecated
     public static @NotNull <S, T, ES extends ChangeEvent<S>, ET extends ChangeEvent<T>> ObservableHelper<T, ET> map(@NotNull ObservableHelper<S, ES> origin, @NotNull Function<ES, ET> mapper) {
         return new MappedObservableHelper<>(origin, mapper);
     }
 
-
+    @Deprecated
     protected static class FilteredObservable<T, E extends ChangeEvent<T>> extends AbstractObservable<T, E> {
 
         private final @NotNull Observable<T, E> origin;
@@ -79,6 +83,7 @@ public class Observables extends UtilityClass {
 
     }
 
+    @Deprecated
     protected static class MappedObservable<S, T, ES extends ChangeEvent<S>, ET extends ChangeEvent<T>> extends AbstractObservable<T, ET> {
 
         private final @NotNull Observable<S, ES> origin;
@@ -115,6 +120,7 @@ public class Observables extends UtilityClass {
 
     }
 
+    @Deprecated
     protected static class FilteredObservableHelper<T, E extends ChangeEvent<T>> extends FilteredObservable<T, E> implements ObservableHelper<T, E> {
 
         public FilteredObservableHelper(ObservableHelper<T, E> origin, @NotNull Predicate<E> predicate) {
@@ -127,6 +133,7 @@ public class Observables extends UtilityClass {
 
     }
 
+    @Deprecated
     protected static class MappedObservableHelper<S, T, ES extends ChangeEvent<S>, ET extends ChangeEvent<T>> extends MappedObservable<S, T, ES, ET> implements ObservableHelper<T, ET> {
 
         public MappedObservableHelper(@NotNull Observable<S, ES> origin, @NotNull Function<ES, ET> mapper) {

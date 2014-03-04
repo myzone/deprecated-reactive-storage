@@ -3,6 +3,7 @@ package com.myzone.reactive.observable;
 import com.google.common.base.Objects;
 import com.myzone.annotations.NotNull;
 import com.myzone.reactive.events.ChangeEvent;
+import com.myzone.reactive.utils.EventProcessor;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -35,17 +36,18 @@ public abstract class AbstractObservable<T, E extends ChangeEvent<T>> implements
     protected void fireEvent(@NotNull E changeEvent) {
         synchronized (listeners) {
             listeners.forEach(listener -> {
-                listener.onChange(this, changeEvent);
+                EventProcessor.getInstance().submitEvent(this, listener, changeEvent);
             });
         }
     }
 
     public @Override @NotNull String toString() {
-        return toStringHelper().toString() + super.toString();
+        return toStringHelper().toString();
     }
 
     protected @NotNull ToStringHelper toStringHelper() {
-        return Objects.toStringHelper(this).add("listeners", listeners);
+        return Objects.toStringHelper(this)
+                .add("listeners", listeners);
     }
 
 }
