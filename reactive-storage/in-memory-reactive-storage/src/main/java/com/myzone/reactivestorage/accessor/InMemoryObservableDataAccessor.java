@@ -199,7 +199,7 @@ public class InMemoryObservableDataAccessor<T> implements ObservableDataAccessor
                         }
                     }
 
-                    eventsToFire.add(new ImmutableReferenceChangeEvent<T>(oldOne, newOne));
+                    eventsToFire.add(ImmutableReferenceChangeEvent.of(oldOne, newOne));
                 });
 
                 updated.forEach((updatedObject, wasUpdated) -> {

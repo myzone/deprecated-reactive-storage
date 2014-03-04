@@ -55,7 +55,9 @@ public interface ObservableStorage<C extends ObservableStorage.ConfigurationTupl
 
     interface Binder {
 
-        <C extends ConfigurationTuple> ObservableStorage<C> bind(C configuration) throws BindFailureException;
+        @NotNull <C extends ConfigurationTuple> ObservableStorage<C> bind(@NotNull C configuration) throws BindFailureException;
+
+        @NotNull Binder to(@NotNull String host);
 
         class BindFailureException extends Exception {
 

@@ -24,7 +24,8 @@ public class RemoteObservableStorageTest {
                 .build();
 
         ObservableStorage<ConfigurationTuple<Integer, ConfigurationTuple<Foo, ConfigurationTuple<Foo, ConfigurationEnd>>>> observableStorage = RemoteObservableStorage
-                .binder("localhost:9898")
+                .binder()
+                .to("localhost:9898")
                 .bind(configuration);
 
         ObservableDataAccessor<Foo> foo1Accessor = observableStorage.getAccessor(configuration.next().get());

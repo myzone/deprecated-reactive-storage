@@ -32,10 +32,14 @@ public class RemoteObservableStorage<C extends ConfigurationTuple> implements Ob
         return new ConfigurationBuilder<>(ConfigurationEnd.END);
     }
 
-    public static @NotNull Binder binder(@NotNull String host) {
+    public static @NotNull Binder binder() {
         return new Binder() {
-            public @Override <C extends ConfigurationTuple> ObservableStorage<C> bind(C configuration) throws BindFailureException {
+            public @Override @NotNull <C extends ConfigurationTuple> ObservableStorage<C> bind(@NotNull C configuration) throws BindFailureException {
                 return new RemoteObservableStorage<>(configuration);
+            }
+
+            public @Override @NotNull Binder to(@NotNull String host) {
+                return this;
             }
         };
     }

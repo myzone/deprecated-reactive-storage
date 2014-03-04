@@ -10,7 +10,6 @@ import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -20,7 +19,6 @@ import static com.myzone.reactivestorage.accessor.ObservableDataAccessor.DataMod
 import static com.myzone.reactivestorage.accessor.ObservableDataAccessor.Transaction;
 import static com.myzone.utils.Matchers.TransformationMatcher.namedTransformation;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
@@ -340,63 +338,6 @@ public abstract class ObservableDataAccessorTest {
 
         try (Transaction<MutablePoint> transaction5 = accessor2.beginTransaction()) {
             assertEquals(transaction5.transactional(mutablePoint).getY(), 100);
-        }
-    }
-
-    @Test
-    public void testDeepCloning() throws Exception {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        Wrapper wrapper1 = new Wrapper();
-        wrapper1.add("ololo1");
-        wrapper1.add("ololo2");
-        wrapper1.add("ololo3");
-
-        Wrapper wrapper2 = new Wrapper();
-        wrapper2.add("ololo1");
-        wrapper2.add("ololo3");
-
-        ObservableDataAccessor<Wrapper> wrapperDataAccessor = (ObservableDataAccessor<Wrapper>) dataAccessorFactory.get();
-        try (Transaction<Wrapper> wrapperTransaction1 = wrapperDataAccessor.beginTransaction()) {
-            wrapperTransaction1.save(wrapper1);
-            wrapperTransaction1.save(wrapper2);
-            wrapperTransaction1.commit();
-        }
-
-        try (Transaction<Wrapper> wrapperTransaction2 = wrapperDataAccessor.beginTransaction()) {
-            Wrapper localWrapper = wrapperTransaction2.getAll()
-                    .filter(wrapper -> !wrapperTransaction2.transactional(wrapper2).has("ololo2"))
-                    .findAny()
-                    .get();
-
-            wrapperTransaction2.transactional(localWrapper).add("fuck");
-        }
-
-        assertFalse(wrapper2.has("fuck"));
-        try (Transaction<Wrapper> wrapperTransaction3 = wrapperDataAccessor.beginTransaction()) {
-            executor.submit(() -> {
-                wrapper2.add("fuck");
-            });
-
-            Wrapper localWrapper = wrapperTransaction3.getAll()
-                    .filter(wrapper -> !wrapperTransaction3.transactional(wrapper2).has("ololo2"))
-                    .findAny()
-                    .get();
-
-            assertFalse(wrapperTransaction3.transactional(localWrapper).has("fuck"));
-        }
-    }
-
-    protected static class Wrapper {
-
-        protected TreeSet<String> strings = new TreeSet<>();
-
-        public void add(String s) {
-            strings.add(s);
-        }
-
-        public boolean has(String s) {
-            return strings.contains(s);
         }
     }
 
