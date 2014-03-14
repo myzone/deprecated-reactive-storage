@@ -1,6 +1,6 @@
 package com.myzone.reactive.collection;
 
-import com.myzone.reactive.events.ListChangeEvent;
+import com.myzone.reactive.event.ListChangeEvent;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.myzone.reactive.reference;
 
 import com.myzone.annotations.NotNull;
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.observable.AbstractObservable;
 
 import java.util.concurrent.locks.Lock;

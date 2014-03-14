@@ -1,6 +1,6 @@
 package com.myzone.reactive.utils;
 
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
 import com.myzone.reactive.reference.ConcurrentObservableReference;
 import com.myzone.reactive.reference.ObservableReadonlyReference;

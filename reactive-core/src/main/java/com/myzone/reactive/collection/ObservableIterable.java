@@ -1,6 +1,6 @@
 package com.myzone.reactive.collection;
 
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
 
 /**

@@ -1,4 +1,4 @@
-package com.myzone.reactive.events;
+package com.myzone.reactive.event;
 
 import com.google.common.base.Objects;
 import com.myzone.annotations.Immutable;

@@ -1,8 +1,8 @@
 package com.myzone.reactive.reference;
 
 import com.google.common.base.Supplier;
-import com.myzone.reactive.events.ChangeEvent;
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
 import com.myzone.utils.Matchers;
 import org.hamcrest.core.IsEqual;

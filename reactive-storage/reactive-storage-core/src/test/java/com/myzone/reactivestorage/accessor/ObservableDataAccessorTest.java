@@ -1,8 +1,8 @@
 package com.myzone.reactivestorage.accessor;
 
 import com.myzone.reactive.collection.ObservableIterable;
-import com.myzone.reactive.events.ChangeEvent;
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.stream.collectors.ObservableCollectors;
 import com.myzone.utils.Matchers;
 import org.hamcrest.core.IsEqual;

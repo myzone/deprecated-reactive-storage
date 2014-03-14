@@ -2,8 +2,8 @@ package com.myzone.reactive.stream.collectors;
 
 import com.myzone.annotations.NotNull;
 import com.myzone.reactive.collection.ObservableIterable;
-import com.myzone.reactive.events.ImmutableReferenceChangeEvent;
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ImmutableReferenceChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.utils.UtilityClass;
 
 import java.util.*;

@@ -2,7 +2,7 @@ package com.myzone.reactive.stream;
 
 import com.google.common.collect.Iterables;
 import com.myzone.reactive.collection.ObservableIterable;
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.reference.ObservableReadonlyReference;
 import com.myzone.reactive.stream.collectors.ObservableCollectors;
 import org.junit.Test;

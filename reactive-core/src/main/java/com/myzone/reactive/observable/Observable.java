@@ -1,7 +1,7 @@
 package com.myzone.reactive.observable;
 
 import com.myzone.annotations.NotNull;
-import com.myzone.reactive.events.ChangeEvent;
+import com.myzone.reactive.event.ChangeEvent;
 
 /**
  * @author myzone

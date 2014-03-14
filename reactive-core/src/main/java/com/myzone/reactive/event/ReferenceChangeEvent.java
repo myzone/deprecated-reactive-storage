@@ -1,4 +1,4 @@
-package com.myzone.reactive.events;
+package com.myzone.reactive.event;
 
 /**
  * @author myzone

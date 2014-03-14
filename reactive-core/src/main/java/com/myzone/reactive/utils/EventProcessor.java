@@ -1,6 +1,6 @@
 package com.myzone.reactive.utils;
 
-import com.myzone.reactive.events.ChangeEvent;
+import com.myzone.reactive.event.ChangeEvent;
 import com.myzone.reactive.observable.Observable;
 
 import java.util.concurrent.ExecutorService;

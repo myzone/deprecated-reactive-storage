@@ -2,7 +2,7 @@ package com.myzone.reactive.observable;
 
 import com.google.common.base.Objects;
 import com.myzone.annotations.NotNull;
-import com.myzone.reactive.events.ChangeEvent;
+import com.myzone.reactive.event.ChangeEvent;
 import com.myzone.reactive.utils.EventProcessor;
 
 import java.util.concurrent.CopyOnWriteArrayList;

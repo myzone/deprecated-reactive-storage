@@ -1,8 +1,8 @@
 package com.myzone.reactive.stream;
 
 import com.myzone.reactive.collection.ObservableIterable;
-import com.myzone.reactive.events.ImmutableReferenceChangeEvent;
-import com.myzone.reactive.events.ReferenceChangeEvent;
+import com.myzone.reactive.event.ImmutableReferenceChangeEvent;
+import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.observable.Observable;
 import com.myzone.reactive.observable.ObservableHelper;
 import com.myzone.reactive.stream.collectors.ObservableCollectors;

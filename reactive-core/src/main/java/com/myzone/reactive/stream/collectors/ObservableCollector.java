@@ -3,7 +3,7 @@ package com.myzone.reactive.stream.collectors;
 import com.google.common.base.Objects;
 import com.myzone.annotations.Immutable;
 import com.myzone.annotations.NotNull;
-import com.myzone.reactive.events.ChangeEvent;
+import com.myzone.reactive.event.ChangeEvent;
 import com.myzone.reactive.observable.Observable;
 
 import java.util.function.BiConsumer;
