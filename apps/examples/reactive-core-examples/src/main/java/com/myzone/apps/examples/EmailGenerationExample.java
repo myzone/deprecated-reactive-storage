@@ -9,7 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 
+import static com.myzone.reactive.reference.ObservableReferences.filter;
 import static com.myzone.reactive.reference.ObservableReferences.map;
 import static com.myzone.reactive.reference.ObservableReferences.reduce;
 import static java.lang.String.format;
@@ -21,79 +24,87 @@ import static javax.swing.SwingUtilities.invokeLater;
  */
 public class EmailGenerationExample {
 
+    private static final String EMAIL_DOMAIN = "mysite.com";
+    private static final Pattern EMAIL_MATCHING_PATTERN = Pattern.compile(format("^%s\\.%s@%s$", "([A-Za-z0-9._-]+)", "([A-Za-z0-9._-]+)", EMAIL_DOMAIN));
+
     public static void main(String[] args) {
         // creating text fields
-        JTextField textField1 = new JTextField();
-        textField1.setSize(400, 20);
-        textField1.setFont(new Font("Impact", Font.PLAIN, 20));
+        JTextField firstNameTextField = new JTextField();
+        firstNameTextField.setSize(400, 20);
+        firstNameTextField.setFont(new Font("Impact", Font.PLAIN, 20));
 
-        JTextField textField2 = new JTextField();
-        textField2.setSize(400, 20);
-        textField2.setFont(new Font("Impact", Font.PLAIN, 20));
+        JTextField secondNameTextField = new JTextField();
+        secondNameTextField.setSize(400, 20);
+        secondNameTextField.setFont(new Font("Impact", Font.PLAIN, 20));
 
-        JTextField textField3 = new JTextField();
-        textField3.setSize(400, 20);
-        textField3.setEditable(false);
-        textField3.setFont(new Font("Impact", Font.PLAIN, 20));
+        JTextField emailTextField = new JTextField();
+        emailTextField.setSize(400, 20);
+        emailTextField.setEditable(false);
+        emailTextField.setFont(new Font("Impact", Font.PLAIN, 20));
 
         JButton okButton = new JButton("Ok");
         okButton.setSize(400, 20);
         okButton.setFont(new Font("Impact", Font.PLAIN, 20));
 
-        // creating it's view-model
-        ObservableReference<String, ReferenceChangeEvent<String>> text1 = new ConcurrentObservableReference<>(textField1.getText());
-        ObservableReference<String, ReferenceChangeEvent<String>> text2 = new ConcurrentObservableReference<>(textField2.getText());
-        ObservableReadonlyReference<String, ReferenceChangeEvent<String>> text3 = reduce(text1, text2, (s1, s2) -> {
-            return format("%s.%s@mysite.com", normalize(s1), normalize(s2));
-        });
-        ObservableReadonlyReference<Boolean, ReferenceChangeEvent<Boolean>> status = map(reduce(text1, text2, (String s1, String s2) -> {
-            s1 = s1.trim();
-            s2 = s2.trim();
+        // creating its view-model
+        ObservableReference<String, ReferenceChangeEvent<String>> firstNameProperty = new ConcurrentObservableReference<>(firstNameTextField.getText());
+        ObservableReference<String, ReferenceChangeEvent<String>> secondNameProperty = new ConcurrentObservableReference<>(secondNameTextField.getText());
 
-            if (s1.isEmpty() || s2.isEmpty()) {
-                return "";
-            } else {
-                return s1 + s2;
-            }
-        }), (String s) -> s.matches("[A-Za-z0-9._-]+"));
+        ObservableReadonlyReference<String, ReferenceChangeEvent<String>> trimmedFirstNameProperty = map(firstNameProperty, String::trim);
+        ObservableReadonlyReference<String, ReferenceChangeEvent<String>> trimmedSecondNameProperty = map(secondNameProperty, String::trim);
+
+        ObservableReadonlyReference<String, ReferenceChangeEvent<String>> emailNameProperty = filter(reduce(
+                trimmedFirstNameProperty,
+                trimmedSecondNameProperty,
+                (firstName, secondName) -> format("%s.%s@%s", normalize(firstName), normalize(secondName), EMAIL_DOMAIN)
+        ), EMAIL_MATCHING_PATTERN.asPredicate(), "");
+        ObservableReadonlyReference<Boolean, ReferenceChangeEvent<Boolean>> statusProperty = reduce(
+                map(trimmedFirstNameProperty, EmailGenerationExample::validate),
+                map(trimmedSecondNameProperty, EmailGenerationExample::validate),
+                Boolean::logicalAnd
+        );
 
         // binding UI with view-model
-        textField1.addKeyListener(new KeyAdapter() {
-            public @Override void keyReleased(KeyEvent e) {
-                text1.set(textField1.getText());
+        firstNameTextField.addKeyListener(new KeyAdapter() {
+            public
+            @Override
+            void keyReleased(KeyEvent e) {
+                firstNameProperty.set(firstNameTextField.getText());
             }
         });
 
-        textField2.addKeyListener(new KeyAdapter() {
-            public @Override void keyReleased(KeyEvent e) {
-                text2.set(textField2.getText());
+        secondNameTextField.addKeyListener(new KeyAdapter() {
+            public
+            @Override
+            void keyReleased(KeyEvent e) {
+                secondNameProperty.set(secondNameTextField.getText());
             }
         });
 
-        text3.addListener((source, event) -> {
-            System.out.println(source + " - got event: " + event);
+        emailNameProperty.addListener((source, event) -> {
+            System.out.println("emailNameProperty - got event: " + event);
 
             invokeLater(() -> {
-                textField3.setText(event.getNew());
+                emailTextField.setText(event.getNew());
             });
         });
-        textField3.setText(text3.get());
+        emailTextField.setText(emailNameProperty.get());
 
-        status.addListener((source, event) -> {
-            System.out.println(source + " - got event: " + event);
+        statusProperty.addListener((source, event) -> {
+            System.out.println("statusProperty - got event: " + event);
 
             invokeLater(() -> {
                 okButton.setEnabled(event.getNew());
             });
         });
-        okButton.setEnabled(status.get());
+        okButton.setEnabled(statusProperty.get());
 
         // some swing stuff just to display all
         Box verticalBox = Box.createVerticalBox();
 
-        verticalBox.add(textField1);
-        verticalBox.add(textField2);
-        verticalBox.add(textField3);
+        verticalBox.add(firstNameTextField);
+        verticalBox.add(secondNameTextField);
+        verticalBox.add(emailTextField);
         verticalBox.add(okButton);
 
         JFrame frame = new JFrame();
@@ -104,7 +115,11 @@ public class EmailGenerationExample {
     }
 
     private static String normalize(String s) {
-        return s.trim().toLowerCase();
+        return s.toLowerCase();
+    }
+
+    private static boolean validate(String s) {
+        return s.matches("^[A-Za-z0-9._-]+$");
     }
 
 

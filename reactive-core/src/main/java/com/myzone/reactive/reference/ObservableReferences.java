@@ -4,13 +4,16 @@ import com.myzone.annotations.NotNull;
 import com.myzone.reactive.event.ImmutableReferenceChangeEvent;
 import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.observable.AbstractObservable;
+import com.myzone.reactive.observable.Observable;
 import com.myzone.reactive.observable.Observables;
 import com.myzone.reactive.utils.DeadListenersCollector;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static com.myzone.reactive.observable.Observable.ChangeListener;
 
@@ -21,6 +24,10 @@ import static com.myzone.reactive.observable.Observable.ChangeListener;
 public class ObservableReferences extends Observables {
 
     private static @NotNull DeadListenersCollector listenersCollector = getListenersCollector();
+
+    public static @NotNull <T> ObservableReadonlyReference<T, ReferenceChangeEvent<T>> filter(@NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> origin, @NotNull Predicate<T> filter, T initialValue) {
+        return new FilteredObservableReference<>(origin, filter, initialValue);
+    }
 
     public static @NotNull <T, K> ObservableReadonlyReference<K, ReferenceChangeEvent<K>> map(@NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> origin, @NotNull Function<T, K> mapper) {
         return new MappedObservableReference<>(origin, mapper);
@@ -53,6 +60,42 @@ public class ObservableReferences extends Observables {
     public interface Binding {
 
         void dispose();
+
+    }
+
+    protected static class FilteredObservableReference<T> extends ConcurrentObservableReference<T> implements ObservableReadonlyReference<T, ReferenceChangeEvent<T>> {
+
+        private final @NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> origin;
+        private final @NotNull Predicate<T> filter;
+
+        private final @NotNull WeakReference<FilteredObservableReference<T>> weakSelf;
+        private final @NotNull ChangeListener<T, ReferenceChangeEvent<T>> changeListener;
+
+        public FilteredObservableReference(@NotNull ObservableReadonlyReference<T, ReferenceChangeEvent<T>> origin, @NotNull Predicate<T> filter, T initialValue) {
+            this.origin = origin;
+            this.filter = filter;
+
+            T originValue = origin.get();
+            set(filter.test(originValue) ? originValue : initialValue);
+
+            weakSelf = new WeakReference<>(this);
+            WeakReference<FilteredObservableReference<T>> weakSelf = new WeakReference<>(this);
+            changeListener = (source, event) -> {
+                FilteredObservableReference<T> strongSelf = weakSelf.get();
+
+                if (filter.test(event.getNew())) {
+                    set(event.getNew());
+                }
+            };
+
+            origin.addListener(changeListener);
+        }
+
+        protected @Override void finalize() throws Throwable {
+            origin.removeListener(changeListener);
+
+            super.finalize();
+        }
 
     }
 

@@ -1,6 +1,7 @@
 package com.myzone.reactive.reference;
 
 import com.myzone.annotations.NotNull;
+import com.myzone.reactive.event.ImmutableReferenceChangeEvent;
 import com.myzone.reactive.event.ReferenceChangeEvent;
 import com.myzone.reactive.observable.AbstractObservable;
 
@@ -46,15 +47,7 @@ public class ConcurrentObservableReference<T> extends AbstractObservable<T, Refe
             value = newValue;
 
             if (oldValue != newValue) {
-                fireEvent(new ReferenceChangeEvent<T>() {
-                    public @Override T getOld() {
-                        return oldValue;
-                    }
-
-                    public @Override T getNew() {
-                        return newValue;
-                    }
-                });
+                fireEvent(ImmutableReferenceChangeEvent.of(oldValue, newValue));
             }
         } finally {
             writeLock.unlock();
