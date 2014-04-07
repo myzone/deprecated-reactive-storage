@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Shower Presentation Engine</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=792, user-scalable=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link rel="stylesheet" href="shower/themes/ribbon/styles/screen.css">
+</head>
+<body class="list">
+<style>
+    .blur {
+        -webkit-filter: grayscale(0.5) blur(7px);
+    }
+
+    .wfill {
+        width: 100%
+    }
+
+    .hfill {
+        height: 100%
+    }
+
+    .contact-icon {
+        width: 32px;
+        height: 32px;
+        margin: 3px;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+
+    .point {
+        margin: 30px 0 0;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 50px !important;
+    }
+
+    h1 {
+        font-size: 80px !important;
+        font-weight: bold;
+    }
+
+    .black {
+        color: black !important;
+    }
+
+    .white {
+        color: white !important;
+    }
+
+    .mask {
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent;
+        -webkit-filter: invert(100%);
+    }
+
+</style>
+
+<header class="caption">
+    <h1>Reactive Programming</h1>
+
+    <p>as reactive as possible.</p>
+</header>
+
+<section class="slide cover" id="Cover">
+    <div>
+        <br>
+        <br>
+        <h2 class="point white">Reactive Programming</h2>
+
+        <p>as reactive as possible by <a href="http://vk.com/myzone">Vyacheslav Goldenshteyn</a></p>
+        <img class="blur wfill" src="pictures/turbine.jpg">
+        <!--
+            To apply styles to the certain slides
+            set slide ID to get needed elements
+            -->
+        <style>
+
+            #Cover p {
+                margin: 10px 0 0;
+                text-align: center;
+                color: #FFF;
+                font-style: italic;
+                font-size: 20px;
+            }
+
+            #Cover p a {
+                color: #FFF;
+            }
+        </style>
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <h2 class="point white">Mutually exclusive ways?</h2>
+        <img class="wfill" src="pictures/mutually-exclusive-ways.jpg">
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <img class="wfill" src="pictures/complimentary.jpg">
+        <br>
+        <br>
+        <br>
+        <br>
+        <h2 class="point mask" style="
+            background: url(pictures/complimentary.jpg);
+            background-position: 53% 46% ;
+            background-size: 800px 400px;
+            background-repeat:no-repeat;
+            ">Complimentary!</h2>
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <img class="wfill" src="pictures/neurons.jpg">
+        <h2 class="white">Event-driven development</h2>
+    </div>
+</section>
+
+
+<section class="slide">
+    <div>
+        <div>
+            <h2>Event-driven development</h2>
+            <ul>
+                <li>Lots of listeners</li>
+                <li class="next">Adding and removing them a lot</li>
+                <li class="next">Lack of readability</li>
+                <li class="next">Memory leaks</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <h1 class="point white">Ooops!!!</h1>
+        <img class="wfill" src="pictures/failure.jpg">
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <h1 class="point white">Let's rock</h1>
+        <img class="hfill" src="pictures/reactive-coca-cola.jpg">
+    </div>
+</section>
+
+<section class="slide">
+    <div>
+        <div>
+            <h2>Advantages</h2>
+            <ul>
+                <li>Clear code</li>
+                <li>Happiness</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <h1 class="point white">Not a silver bullet</h1>
+        <img class="wfill" src="pictures/the-power-of-reactive-programming.jpg">
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <img class="wfill" src="pictures/brain.jpg">
+        <h1 class="point black">Software transactional memory</h1>
+    </div>
+</section>
+
+
+<section class="slide cover">
+    <div>
+        <h1 class="point white">Kotlin lib is</h1>
+        <h1 class="point white">comming soon!</h1>
+    </div>
+</section>
+
+
+<section class="slide">
+    <div>
+        <h1 class="black">Thanks!</h1>
+        <h2 class="black">Feel free to contact:</h2>
+
+        <div><img class="contact-icon" src="pictures/mail-icon.jpg">vyacheslav.goldenshteyn@gmail.com</div>
+        <div><img class="contact-icon" src="pictures/github-icon.jpg">github.com/myzone</div>
+        <div><img class="contact-icon" src="pictures/vk-icon.jpg">vk.com/myzone</div>
+        <div><img class="contact-icon" src="pictures/skype-icon.jpg">my.zo.ne</div>
+
+        <img style="position: absolute; top:25%; left: 55%; height:70%" src="pictures/contacts-qr.gif">
+    </div>
+</section>
+
+
+
+<div class="progress">
+    <div></div>
+</div>
+<script src="shower/shower.min.js"></script>
+<!-- Copyright © 2013 Yours Truly, Famous Inc. -->
+<!-- Photos by John Carey, fiftyfootshadows.net -->
+</body>
+</html>
