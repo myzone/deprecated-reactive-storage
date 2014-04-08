@@ -57,6 +57,10 @@
         -webkit-filter: invert(100%);
     }
 
+    .black-border {
+        text-shadow: 0px 15px 20px black;
+    }
+
 </style>
 
 <header class="caption">
@@ -95,17 +99,26 @@
 </section>
 
 
+<section class="slide">
+    <center>
+        <br>
+        <div class="next"><img height="250px" src="pictures/duke.png"></div>
+        <div class="next"><img height="250px" src="pictures/haskell.png"></div>
+    </center>
+</section>
+
+
 <section class="slide cover">
     <div>
-        <h2 class="point white">Mutually exclusive ways?</h2>
-        <img class="wfill" src="pictures/mutually-exclusive-ways.jpg">
+        <h2 class="point white black-border">Mutually exclusive ways?</h2>
+        <img class="wfill" src="pictures/mutually-exclusive-ways-collage.jpg">
     </div>
 </section>
 
 
 <section class="slide cover">
     <div>
-        <img class="wfill" src="pictures/complimentary.jpg">
+        <img class="wfill" src="pictures/complimentary-collage.jpg">
         <br>
         <br>
         <br>
@@ -119,11 +132,25 @@
     </div>
 </section>
 
-
 <section class="slide cover">
     <div>
+        <img class="wfill" src="pictures/hell-gui.png">
+    </div>
+</section>
+
+<section class="slide">
+    <div>
+        <h2>Just observer</h2>
+        <img class="wfill" src="pictures/observer.png">
+    </div>
+</section>
+
+<section class="slide cover shout">
+    <div>
         <img class="wfill" src="pictures/neurons.jpg">
-        <h2 class="white">Event-driven development</h2>
+        <br>
+        <br>
+        <h1 class="white black-border point">Wellome to real world</h1>
     </div>
 </section>
 
@@ -158,12 +185,32 @@
     </div>
 </section>
 
+
+<section class="slide">
+    <div>
+        <pre>
+            <code>val trimmedName = <mark>map</mark>(nameInput.text(), String::trim)</code>
+            <code>val trimmedSurname = <mark>map</mark>(surnameInput.text(), String::trim)</code>
+            <code>val rawEmail = <mark>reduce</mark>(trimmedName,
+                      trimmedSurname,
+                      {f, s -> "$f.$s@$EMAIL_DOMAIN"})</code>
+            <code>val validatedEmail = <mark>filter</mark>(rawEmail, ::validateEmail, "")</code>
+            <code>val status = <mark>map</mark>(rawEmail, ::validateEmail)</code>
+            <code><mark>bind</mark>(emailInput.text(), validatedEmail)</code>
+            <code><mark>bind</mark>(okButton.enabled(), status)</code>
+        </pre>
+    </div>
+</section>
+
+
 <section class="slide">
     <div>
         <div>
             <h2>Advantages</h2>
             <ul>
+                <li>No more listeners pipelines</li>
                 <li>Clear code</li>
+                <li>No memory leaks</li>
                 <li>Happiness</li>
             </ul>
         </div>
@@ -215,7 +262,5 @@
     <div></div>
 </div>
 <script src="shower/shower.min.js"></script>
-<!-- Copyright © 2013 Yours Truly, Famous Inc. -->
-<!-- Photos by John Carey, fiftyfootshadows.net -->
 </body>
 </html>
