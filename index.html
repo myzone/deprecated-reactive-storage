@@ -134,6 +134,12 @@
 
 <section class="slide cover">
     <div>
+        <img class="wfill" src="pictures/shuttle.jpg">
+    </div>
+</section>
+
+<section class="slide cover">
+    <div>
         <img class="wfill" src="pictures/hell-gui.png">
     </div>
 </section>
@@ -192,8 +198,8 @@
             <code>val trimmedName = <mark>map</mark>(nameInput.text(), String::trim)</code>
             <code>val trimmedSurname = <mark>map</mark>(surnameInput.text(), String::trim)</code>
             <code>val rawEmail = <mark>reduce</mark>(trimmedName,
-                      trimmedSurname,
-                      {f, s -> "$f.$s@$EMAIL_DOMAIN"})</code>
+                       trimmedSurname,
+                       {f, s -> "$f.$s@$EMAIL_DOMAIN"})</code>
             <code>val validatedEmail = <mark>filter</mark>(rawEmail, ::validateEmail, "")</code>
             <code>val status = <mark>map</mark>(rawEmail, ::validateEmail)</code>
             <code><mark>bind</mark>(emailInput.text(), validatedEmail)</code>
