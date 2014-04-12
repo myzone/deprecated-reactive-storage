@@ -21,6 +21,14 @@
         height: 100%
     }
 
+    .vcenter {
+        vertical-align: middle
+    }
+
+    .inline {
+        display: inline-block
+    }
+
     .contact-icon {
         width: 32px;
         height: 32px;
@@ -60,7 +68,6 @@
     .black-border {
         text-shadow: 0px 15px 20px black;
     }
-
 </style>
 
 <header class="caption">
@@ -102,8 +109,8 @@
 <section class="slide">
     <center>
         <br>
-        <div class="next"><img height="250px" src="pictures/duke.png"></div>
-        <div class="next"><img height="250px" src="pictures/haskell.png"></div>
+        <div class="next"><h1 class="inline vcenter">OOP as </h1><img class="vcenter" height="250px" src="pictures/duke.png"></div>
+        <div class="next"><h1 class="inline vcenter">FP as </h1><img class="vcenter" height="250px" src="pictures/haskell.png"></div>
     </center>
 </section>
 
@@ -208,6 +215,12 @@
     </div>
 </section>
 
+<section class="slide cover" style="background: white">
+    <div>
+        <img class="wfill" src="pictures/data-flow.jpg">
+    </div>
+</section>
+
 
 <section class="slide">
     <div>
@@ -226,8 +239,8 @@
 
 <section class="slide cover">
     <div>
-        <h1 class="point white">Not a silver bullet</h1>
-        <img class="wfill" src="pictures/the-power-of-reactive-programming.jpg">
+        <h1 class="point black">Houston, we have a problem</h1>
+        <img class="wfill" src="pictures/semko.jpg">
     </div>
 </section>
 
