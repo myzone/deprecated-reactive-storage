@@ -145,6 +145,20 @@
     </div>
 </section>
 
+<section class="slide">
+    <div>
+        <pre>
+            <code>stream a, b, c</code>
+            <code>c := a + b</code>
+            <code>a.set(2)</code>
+            <code>b.set(4)</code>
+            <code>print c <mark class="comment">// prints 6</mark></code>
+            <code>b.set(2)</code>
+            <code>print c <mark class="comment">// prints 4</mark></code>
+       </pre>
+    </div>
+</section>
+
 <section class="slide cover">
     <div>
         <img class="wfill" src="pictures/hell-gui.png">
@@ -177,6 +191,7 @@
                 <li class="next">Adding and removing them a lot</li>
                 <li class="next">Lack of readability</li>
                 <li class="next">Memory leaks</li>
+                <li class="next">Debug unfriendly</li>
             </ul>
         </div>
     </div>
@@ -207,9 +222,9 @@
             <code>val rawEmail = <mark>reduce</mark>(trimmedName,
                        trimmedSurname,
                        {f, s -> "$f.$s@$EMAIL_DOMAIN"})</code>
-            <code>val validatedEmail = <mark>filter</mark>(rawEmail, ::validateEmail, "")</code>
+            <code>val validEmail = <mark>filter</mark>(rawEmail, ::validateEmail, "")</code>
             <code>val status = <mark>map</mark>(rawEmail, ::validateEmail)</code>
-            <code><mark>bind</mark>(emailInput.text(), validatedEmail)</code>
+            <code><mark>bind</mark>(emailInput.text(), validEmail)</code>
             <code><mark>bind</mark>(okButton.enabled(), status)</code>
         </pre>
     </div>
@@ -228,9 +243,9 @@
             <h2>Advantages</h2>
             <ul>
                 <li>No more listeners pipelines</li>
-                <li>Clear code</li>
+                <li>Clear declarative code</li>
                 <li>No memory leaks</li>
-                <li>Happiness</li>
+                <li>A bit of happiness</li>
             </ul>
         </div>
     </div>
@@ -239,8 +254,22 @@
 
 <section class="slide cover">
     <div>
-        <h1 class="point black">Houston, we have a problem</h1>
+        <h1 class="point white">Houston, we have a problem</h1>
         <img class="wfill" src="pictures/semko.jpg">
+    </div>
+</section>
+
+
+<section class="slide">
+    <div>
+        <div>
+            <h2>Disadvantages</h2>
+            <ul>
+                <li>Debug unfriendly</li>
+                <li>Eventual consistency</li>
+                <li>Frameworks wrappers are required</li>
+            </ul>
+        </div>
     </div>
 </section>
 
